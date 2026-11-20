@@ -1,3 +1,4 @@
+import {entranceHallRegion} from './entrance-hall.js';
 import {balconyLevel} from './front-balcony-v2.js';
 import {engravedGableMaterial} from './inscription.js';
 import * as THREE from '../vendor/three/build/three.module.js';
@@ -72,7 +73,7 @@ async function run(){
 
  const destinations=[
   ['Vorplatz',0,77,0,0],['Portikus',0,16,.86,0],['Garten',0,-12,0,Math.PI],
-  ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Linkes Haus',-houseAxis,8,0,0],['Rechtes Haus',houseAxis,8,0,0]
+  ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Eingang linkes Haus',-houseAxis,18.5,0,0],['Eingang rechtes Haus',houseAxis,18.5,0,0]
  ];
 const place=document.querySelector('#place');
 const nav=document.querySelector('#places');
@@ -192,7 +193,7 @@ function step(nx,nz){
   let region='Vorplatz';
   if(y>upperFloor-.10)region='Zweites Obergeschoss';
   else if(y>balconyLevel-.10)region=z>16.27?'Balkon':'Erstes Obergeschoss';
-  else if(Math.abs(Math.abs(x)-houseAxis)<houseWidth/2-.3&&z>1.3&&z<15.7)region=x<0?'Linkes Haus':'Rechtes Haus';
+  else if(Math.abs(Math.abs(x)-houseAxis)<houseWidth/2-.3&&z>1.3&&z<15.7)region=entranceHallRegion(x-Math.sign(x)*houseAxis,z);
   else if(Math.abs(x)<8.55&&z>=11.8&&z<=20.54)region='Portikus';
   else if(z<10)region='Garten';
   if(place.textContent!==region)place.textContent=region;

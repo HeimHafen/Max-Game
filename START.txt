@@ -18,3 +18,6 @@ Beide Häuser sind 25 statt 15 Einheiten breit und haben fünf Fassadenachsen.
 Eichentür, Balkon und verglaste Balkontür liegen auf der mittleren Achse.
 Die Häuser haben durchgehende Geschossböden ohne Innentreppen.
 Über Orte → Balkonzimmer links oder rechts gelangst du direkt zum jeweiligen Balkon.
+
+Hinter jeder Eichentür liegt ein Windfang mit automatischer Glasflügeltür.
+Die Eingangshalle verbindet vier Seitenräume und den mittleren Gartengang.

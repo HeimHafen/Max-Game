@@ -1,3 +1,4 @@
+import {addEntranceHall} from './entrance-hall.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
 import {addEntranceLanterns} from './entrance-lanterns-v2.js';
 import {addPortalDoors,createOakFinish} from './portal-doors-v2.js';
@@ -247,6 +248,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   }
   mesh('Balkonschwelle',cx,balconyLevel-.05,15.875,2.44,.10,.29,mats.stairStone);
   floor(cx-1.22,cx+1.22,15.73,16.02,balconyLevel);
+  addEntranceHall(THREE,scene,mats,mesh,cx,width/2-.17,glass,doors);
   addFrontBalcony(THREE,scene,mats,mesh,floor,cx,front);
  }
  house(-houseAxis);house(houseAxis);
