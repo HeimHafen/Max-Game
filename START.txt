@@ -13,3 +13,5 @@ Links ziehen zum Laufen, rechts wischen zum Umsehen.
 
 Zum Vorplatz stehen massive Eichentüren, zum Garten verglaste Flügeltüren.
 Alle Eingänge öffnen bei Annäherung automatisch.
+
+Über Orte → Balkonzimmer erreichst du das erste Obergeschoss mit Balkon.
