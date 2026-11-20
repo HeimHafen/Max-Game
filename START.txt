@@ -1,10 +1,11 @@
-BURG RABENFELS V7
+BURG RABENFELS V8
 
-Für GitHub Pages index.html und burg-v7.js gemeinsam in denselben Ordner
-hochladen. Die Startseite lädt burg-v7.js direkt.
+Für GitHub Pages index.html und burg-v8.js in denselben Ordner hochladen.
+Links ziehen zum Laufen, rechts wischen zum Umsehen. Unter „Orte“ stehen
+die Ziele zur Direktauswahl.
 
-Links ziehen zum Laufen, rechts wischen zum Umsehen. Über „Orte“ sind
-die Ziele direkt erreichbar.
+Gewölbekeller: Am Ende der Kellertreppe ist ein ebenes Podest. Dort
+links durch die Türöffnung in den Gewölbekeller abbiegen.
 
-V7 überarbeitet die Fensterwände des Rittersaals, die Stirnwände des
-Gewölbekellers, die Durchgänge der Seitenhöfe und Brüstungsecken.
+Westturm: Der Treppenfuß ist von der Stirnseite aus erreichbar. Oben
+führt das Podest seitlich zur Aussichtsplattform.
