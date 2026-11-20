@@ -1,10 +1,10 @@
-BURG RABENFELS V6
+BURG RABENFELS V7
 
-Für GitHub Pages index.html und burg-v6.js in denselben Ordner hochladen.
-Die Startseite lädt die neue JavaScript-Datei über ihren eindeutigen Namen.
+Für GitHub Pages index.html und burg-v7.js gemeinsam in denselben Ordner
+hochladen. Die Startseite lädt burg-v7.js direkt.
 
-Links ziehen zum Laufen, rechts wischen zum Umsehen. Beide Gesten
-funktionieren gleichzeitig. Über „Orte“ sind die Ziele direkt erreichbar.
+Links ziehen zum Laufen, rechts wischen zum Umsehen. Über „Orte“ sind
+die Ziele direkt erreichbar.
 
-Zum neuen Westhof geht es durch die Vorratskammer oder durch die
-Westwand der Nordhalle. Fünf leere Räume öffnen sich zum Westhof.
+V7 überarbeitet die Fensterwände des Rittersaals, die Stirnwände des
+Gewölbekellers, die Durchgänge der Seitenhöfe und Brüstungsecken.
