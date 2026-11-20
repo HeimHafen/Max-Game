@@ -1,0 +1,18 @@
+BURG RABENFELS
+
+index.html im Browser öffnen und „Burg betreten“ wählen. Das Projekt
+läuft offline und braucht WebGL. Für GitHub Pages index.html und burg.js
+zusammen in das Stammverzeichnis der Website legen.
+
+Computer: WASD oder Pfeiltasten. Zum Umsehen mit gedrückter
+Maustaste ziehen. Umschalt beschleunigt den Schritt.
+Handy: Pfeiltasten auf dem Bildschirm. Zum Umsehen über das Bild ziehen.
+
+Der Eingang zum Rittersaal liegt geradeaus am Ende des Hofes.
+Die Burgkapelle steht rechts im Hof.
+Die Kellertreppe beginnt rechts beim Burgtor. Unten links abbiegen.
+Der Westturm liegt links am Hof. Die Treppe beginnt hinten im Turm.
+Der Wehrgang hat einen eigenen Aufgang hinten links im Hof.
+Die zwei Tortürme betrittst du vom Hof aus. Innen führen zwei
+Treppenläufe auf die jeweilige Plattform.
+„Orte“ öffnet die Direktwahl zu jedem Bereich.
