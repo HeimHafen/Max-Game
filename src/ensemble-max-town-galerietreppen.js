@@ -1,3 +1,4 @@
+import {addCellar,cutOpening,stairOpening} from './cellar.js';
 import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition} from './house-layout.js';
 import {addEntranceHall} from './entrance-hall.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
@@ -11,7 +12,8 @@ export const houseAxis=12.1+houseWidth/2;
 export const upperFloor=9.06;
 
 export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=mats.facadeWall){
- const surfaces=[[-80,80,-90,95,0]], walls=[], doors=[];
+ const surfaces=[-houseAxis,houseAxis].reduce((parts,axis)=>parts.flatMap(part=>cutOpening(part,stairOpening(axis))),[[-80,80,-90,95]]).map(part=>[...part,0]);
+ const walls=[],doors=[];
  function floor(l,r,n,f,y){surfaces.push([l,r,n,f,y]);}
  function block(bounds){
   walls.push([bounds.min.x,bounds.max.x,bounds.min.z,bounds.max.z,bounds.min.y,bounds.max.y]);
@@ -246,8 +248,12 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   }
   for(const [level,height] of [[.05,.05],[balconyLevel,.20],[upperFloor,.20]]){
    const half=width/2-.38;
-   mesh('Durchgehender Geschossboden',cx,level-height/2,houseMiddle+.01,2*half,height,width-.54,mats.stairStone);
-   floor(cx-half,cx+half,rear+.28,front-.26,level);
+   const bounds=[cx-half,cx+half,rear+.28,front-.26];
+   const sections=level===.05?cutOpening(bounds,stairOpening(cx)):[bounds];
+   for(const [l,r,n,f] of sections){
+    mesh('Geschossboden',(l+r)/2,level-height/2,(n+f)/2,r-l,height,f-n,mats.stairStone);
+    floor(l,r,n,f,level);
+   }
   }
   mesh('Balkonschwelle',cx,balconyLevel-.05,15.875,2.44,.10,.29,mats.stairStone);
   floor(cx-1.22,cx+1.22,15.73,16.02,balconyLevel);
@@ -255,5 +261,6 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   addFrontBalcony(THREE,scene,mats,mesh,floor,cx,front);
  }
  house(-houseAxis);house(houseAxis);
+ addCellar(THREE,scene,mats,mesh,floor,houseAxis);
  return {portico,surfaces,walls,doors};
 }

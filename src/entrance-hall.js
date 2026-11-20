@@ -1,3 +1,4 @@
+import {cutOpening,stairOpening} from './cellar.js';
 import {addPortalDoors} from './portal-doors-v2.js';
 
 import {houseFront,houseRear,frontPartition,rearPartition} from './house-layout.js';
@@ -24,26 +25,40 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
  const rearZ=(rearPartition+rear)/2;
  const frontDepth=front-frontPartition-.55,rearDepth=rearPartition-rear-.55;
  mesh('Verputzte Deckenuntersicht',cx,ceilingY-.019,(front+rear)/2,halfWidth*2,.042,front-rear,ceiling);
- mesh('Fugenbett',cx,floorY+.003,(front+rear)/2,halfWidth*2,.009,front-rear,grout);
+ const opening=stairOpening(cx);
+ for(const [l,r,n,f] of cutOpening([cx-halfWidth,cx+halfWidth,rear,front],opening)){
+  mesh('Fugenbett',(l+r)/2,floorY+.003,(n+f)/2,r-l,.009,f-n,grout);
+ }
  const columns=24,rows=26,tileWidth=2*halfWidth/columns,tileDepth=(front-rear)/rows;
- const tiles=new THREE.InstancedMesh(new THREE.BoxGeometry(tileWidth-.012,.013,tileDepth-.012),stone,columns*rows);
- const transform=new THREE.Matrix4();
+ const tileSections=[];
  const colors=[0xcdbba4,0xd9c8b0,0xd4c1a9,0xc8b79f,0xdccdb8].map(color=>new THREE.Color(color));
  for(let row=0;row<rows;row++){
   for(let col=0;col<columns;col++){
-   const index=row*columns+col;
-   transform.makeTranslation(cx-halfWidth+(col+.5)*tileWidth,floorY+.009,rear+(row+.5)*tileDepth);
-   tiles.setMatrixAt(index,transform);
-   tiles.setColorAt(index,colors[(col*13+row*7+col*row)%colors.length]);
+   const l=cx-halfWidth+col*tileWidth,n=rear+row*tileDepth;
+   const color=colors[(col*13+row*7+col*row)%colors.length];
+   for(const section of cutOpening([l+.006,l+tileWidth-.006,n+.006,n+tileDepth-.006],opening)){
+    tileSections.push({section,color});
+   }
   }
  }
+ const tiles=new THREE.InstancedMesh(new THREE.BoxGeometry(1,.013,1),stone,tileSections.length);
+ const matrix=new THREE.Matrix4();
+ tileSections.forEach(({section:[l,r,n,f],color},index)=>{
+  matrix.makeScale(r-l,1,f-n).setPosition((l+r)/2,floorY+.009,(n+f)/2);
+  tiles.setMatrixAt(index,matrix);
+  tiles.setColorAt(index,color);
+ });
  tiles.name='Geschliffene Kalksteinplatten';
  tiles.receiveShadow=true;
  scene.add(tiles);
  function frame(name,x,z,w,d,y,breadth,height,material){
   for(const side of [-1,1]){
-   mesh(name,cx+x,y,z+side*(d-breadth)/2,w,height,breadth,material);
-   mesh(name,cx+x+side*(w-breadth)/2,y,z,breadth,height,d-2*breadth,material);
+   for(const [px,pz,width,depth] of [[cx+x,z+side*(d-breadth)/2,w,breadth],[cx+x+side*(w-breadth)/2,z,breadth,d-2*breadth]]){
+    const bounds=[px-width/2,px+width/2,pz-depth/2,pz+depth/2];
+    for(const [l,r,n,f] of material===border?cutOpening(bounds,opening):[bounds]){
+     mesh(name,(l+r)/2,y,(n+f)/2,r-l,height,f-n,material);
+    }
+   }
   }
  }
  const rooms=[
