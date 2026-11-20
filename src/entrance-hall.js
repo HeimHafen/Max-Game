@@ -1,12 +1,12 @@
 import {addPortalDoors} from './portal-doors-v2.js';
 
-import {houseFront,houseRear,frontPartition,rearPartition} from './house-layout.js';
+import {houseFront,houseRear,frontPartition,rearPartition,rearRoomSplit,interiorPartitionThickness} from './house-layout.js';
 const vestibuleHalf=1.85;
-const rearRoomSplit=-vestibuleHalf;
+
 const doorHeight=2.78;
 const floorY=.05;
 const ceilingY=4.36;
-const thickness=.23;
+const thickness=interiorPartitionThickness;
 
 export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
  const plaster=new THREE.MeshStandardMaterial({color:0xe2d3bb,roughness:.9});
