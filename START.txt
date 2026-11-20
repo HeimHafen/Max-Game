@@ -4,8 +4,8 @@ Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
 auf GitHub Pages kopieren. index.html, src/, assets/ und vendor/ gehören
 zusammen. Die Seite läuft über HTTP oder HTTPS.
 
-Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Die sechs
-Säulen haben durchgehend modellierte Kanneluren und neue Steinprofile. Die beiden
+Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Unter dem Portikus rahmen 15 Steinkassetten die mittige Laternenrosette.
+Die sechs Säulen haben durchgehend modellierte Kanneluren und neue Steinprofile. Die beiden
 separaten Häuser sind im Erdgeschoss von vorne und hinten begehbar.
 Die Fenster der oberen Stockwerke gehören zur Fassade.
 
