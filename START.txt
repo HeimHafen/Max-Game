@@ -1,12 +1,10 @@
-BURG RABENFELS V5
+BURG RABENFELS V6
 
-Für GitHub Pages index.html und burg.js gemeinsam austauschen.
+Für GitHub Pages index.html und burg-v6.js in denselben Ordner hochladen.
+Die Startseite lädt die neue JavaScript-Datei über ihren eindeutigen Namen.
+
 Links ziehen zum Laufen, rechts wischen zum Umsehen. Beide Gesten
 funktionieren gleichzeitig. Über „Orte“ sind die Ziele direkt erreichbar.
 
-Der neue Osthof ist über zwei Durchgänge erreichbar. Einer führt durch
-die Schreibstube im östlichen Flügel der Hinterburg, der andere durch
-die Ostwand der Nordhalle. Vier leere Räume öffnen sich zum Osthof.
-
-Der Gewölbekeller ist über die Treppe im vorderen Burghof erreichbar.
-Unten links abbiegen.
+Zum neuen Westhof geht es durch die Vorratskammer oder durch die
+Westwand der Nordhalle. Fünf leere Räume öffnen sich zum Westhof.
