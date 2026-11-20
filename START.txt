@@ -10,3 +10,5 @@ separaten Häuser sind im Erdgeschoss von vorne und hinten begehbar.
 Die Fenster der oberen Stockwerke gehören zur Fassade.
 
 Links ziehen zum Laufen, rechts wischen zum Umsehen.
+
+Die verglasten Doppelflügeltüren öffnen bei Annäherung automatisch.
