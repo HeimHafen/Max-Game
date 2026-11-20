@@ -1,4 +1,55 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Burg Rabenfels</title><style>
-*{box-sizing:border-box}body{margin:0;background:#222;color:#f9e8c7;font:15px system-ui;overflow:hidden}canvas{position:absolute;width:100%;height:100%;touch-action:none}header,aside,.intro,.pad{position:absolute}header{top:max(18px,env(safe-area-inset-top));left:max(18px,env(safe-area-inset-left));pointer-events:none;text-shadow:0 2px 6px black}h1,h2{font:normal clamp(32px,7vw,66px) Georgia;margin:.15em 0}header strong{font:24px Georgia}header small{display:block;margin-top:6px;letter-spacing:.08em}aside{right:18px;top:max(16px,env(safe-area-inset-top));display:grid;justify-items:end;gap:8px}button{font:inherit;color:inherit;background:#28231eee;border:1px solid #a68c60;border-radius:7px;padding:10px 15px;cursor:pointer;touch-action:none}button:hover{background:#554632}nav{background:#201c17f2;border:1px solid #9a825e;border-radius:8px;padding:10px;max-width:260px}nav button{display:block;width:100%;margin:5px auto;text-align:left}.intro{inset:0;display:grid;place-items:center;background:linear-gradient(90deg,#17140edc,#1b160b24);padding:24px}.intro article{width:min(650px,100%);margin-right:min(20vw,160px);padding:25px 0;text-shadow:0 2px 5px #17120b}.intro p{max-width:420px;line-height:1.55}.intro label{letter-spacing:.23em;text-transform:uppercase;font-size:11px}.intro button{background:#b48d56;color:#171007;font-weight:700;text-shadow:none}.pad{bottom:max(20px,env(safe-area-inset-bottom));left:max(18px,env(safe-area-inset-left));display:none;grid-template-columns:repeat(3,52px);gap:4px}.pad button{padding:12px 0}.pad button:first-child{grid-column:2}.pad button:nth-child(2){grid-column:1}@media(pointer:coarse){.pad:not([hidden]){display:grid}}[hidden]{display:none!important}
-</style></head><body><canvas aria-label="Dreidimensionaler Burgrundgang"></canvas><header><strong>Burg Rabenfels</strong><small id="place">Burgbrücke</small></header><aside><button id="map">Orte</button><nav id="places" hidden aria-label="Orte der Burg"></nav><button id="help" aria-label="Steuerung">?</button></aside><div class="pad" hidden><button data-key="w" aria-label="Vorwärts">↑</button><button data-key="a" aria-label="Links">←</button><button data-key="s" aria-label="Rückwärts">↓</button><button data-key="d" aria-label="Rechts">→</button></div><section class="intro"><article><label>Ein begehbarer 3D-Rundgang</label><h1>Burg Rabenfels</h1><p>Über die Brücke in den Burghof, zur Kapelle mit Buntglas und hinauf auf die Zinnen. Unter dem Pflaster wartet der Gewölbekeller.</p><p>WASD oder Pfeiltasten zum Gehen. Zum Umsehen Maus oder Finger über das Bild ziehen. Auf dem Handy erscheinen Lauftasten.</p><button id="start">Burg betreten</button><p id="error" role="alert"></p></article></section><script src="burg.js"></script></body></html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Burg Rabenfels</title>
+<style>
+* { box-sizing: border-box }
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none }
+body { background: #211f1b; color: #fff2d8; font: 15px system-ui, sans-serif }
+[hidden] { display: none !important }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; -webkit-touch-callout: none; user-select: none }
+header, aside { position: fixed; top: max(16px, env(safe-area-inset-top)) }
+header { left: max(16px, env(safe-area-inset-left)); max-width: calc(100% - 155px); pointer-events: none; text-shadow: 0 1px 6px #110e0a, 0 2px 12px #110e0a }
+header strong { display: block; font: clamp(19px, 5.4vw, 26px) Georgia, serif }
+header small { display: block; margin-top: 6px; letter-spacing: .04em }
+aside { right: max(16px, env(safe-area-inset-right)); display: flex; align-items: start; gap: 6px }
+button { min-height: 44px; min-width: 44px; font: inherit; color: inherit; background: #231e18ee; border: 1px solid #a58b65; border-radius: 8px; padding: 9px 13px; cursor: pointer; touch-action: manipulation }
+button:focus-visible { outline: 2px solid #ffe1aa; outline-offset: 3px }
+nav { position: absolute; top: 54px; right: 0; width: min(250px, calc(100vw - 32px)); max-height: min(65vh, calc(100vh - 92px)); max-height: min(65dvh, calc(100dvh - 92px)); overflow: auto; background: #201c17f8; border: 1px solid #8c7453; border-radius: 9px; padding: 7px }
+nav button { display: block; width: 100%; margin: 3px 0; text-align: left; border-color: #594732 }
+.intro { position: fixed; inset: 0; display: grid; align-items: end; overflow: auto; padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: linear-gradient(0deg, #17130ff8, #17130fe0 24%, #17130f30 58%, transparent 75%) }
+article { width: min(100%, 470px); min-width: 0; text-shadow: 0 1px 5px #16110d }
+h1 { font: normal clamp(36px, 9vw, 64px)/1.04 Georgia, serif; margin: 0 0 12px }
+p { max-width: 36ch; line-height: 1.48; margin: 0 0 14px }
+.gestures { color: #e0cba9 }
+.intro button { background: #dab47a; color: #24190e; font-weight: 700; padding-inline: 18px }
+#error:empty { display: none }
+#error { margin: 10px 0 0 }
+@media (min-width: 840px) and (min-height: 500px) {
+ .intro { align-items: center; padding-inline: 6vw; background: linear-gradient(90deg, #17130ff2, #17130fc4 29%, transparent 73%) }
+}
+@media (max-height: 420px) { h1 { font-size: 32px; margin-bottom: 8px } p { margin-bottom: 8px } }
+</style>
+</head>
+<body>
+<canvas aria-label="Dreidimensionaler Burgrundgang"></canvas>
+<header hidden><strong>Burg Rabenfels</strong><small id="place">Burgbrücke</small></header>
+<aside hidden>
+<button id="map" aria-expanded="false" aria-controls="places">Orte</button>
+<button id="help" aria-label="Steuerung anzeigen">?</button>
+<nav id="places" hidden aria-label="Orte der Burg"></nav>
+</aside>
+<section class="intro">
+<article>
+<h1>Burg Rabenfels</h1>
+<p id="description">Über die Brücke zur Burgkapelle und hinauf auf die Zinnen. Tief unter dem Hof wartet der Gewölbekeller.</p>
+<p class="gestures"><strong>Links ziehen</strong> zum Laufen.<br><strong>Rechts wischen</strong> zum Umsehen.</p>
+<button id="start">Burg betreten</button>
+<p id="error" role="alert"></p>
+</article>
+</section>
+<script src="burg.js?v=3"></script>
+</body>
+</html>

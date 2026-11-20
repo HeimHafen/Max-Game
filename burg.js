@@ -218,8 +218,8 @@ for(const sign of [-1,1]){
 }
 floor(0,24,33,12,0,grass,3);
 for(let i=0;i<15;i++){
- const z=18.6+i*.75,x=-.132*(z-19)*(z-19);
- const next=-.132*(z+.75-19)*(z+.75-19);
+ const z=18.6+i*.75,x=-.013*Math.max(0,z-28)**2;
+ const next=-.013*Math.max(0,z+.75-28)**2;
  quad([x-1.94,.01,z],[next-1.94,.01,z+.75],[next+1.94,.01,z+.75],[x+1.94,.01,z],[.38,.34,.26],6);
 }
 quad([-19,-3.85,14.1],[-19,-3.85,19.1],[19,-3.85,19.1],[19,-3.85,14.1],[.17,.24,.24],8);
@@ -568,7 +568,7 @@ for(let i=0;i<16;i++){
 }
 // Der Start ist bewusst weiter vor der Brücke positioniert.
 const destinations=[
- ['Burgbrücke',-9.75,27,0,.41],
+ ['Burgbrücke',0,28,0,0],
  ['Burghof',0,4,0,0],
  ['Rittersaal',0,-16,0,0],
  ['Westturm',-17,1,0,-1.57],
@@ -677,7 +677,8 @@ void main(){
   float mortar=smoothstep(.013,.05,joint);
   float bevel=smoothstep(.04,.10,joint);
   base=mix(c*.49,c*(.59+.36*hash(floor(cell))+.18*grit+.38*stains)*mix(.76,1.,bevel),mortar);
-  float moss=smoothstep(.57,.79,noise(uv*.88))*smoothstep(.5,.77,stains);
+  float moss=smoothstep(.56,.81,noise(uv*.88))*smoothstep(.47,.76,stains);
+  base*=.84+.25*noise(uv*5.6)+.11*noise(uv*14.3+vec2(noise(uv*3.7)));
   base=mix(base,base*vec3(.66,.78,.54),moss*.9);
  } else if(m>1.5&&m<2.5){
   base*=.67+.34*noise(vec2(uv.x*30.,uv.y*1.2))+.19*stains;
@@ -789,45 +790,83 @@ gl.uniform3fv(wu.sunDir,sun);
 gl.uniform3fv(wu.sunAcross,sunRight);
 gl.uniform3fv(wu.sunVertical,sunUp);
 const su=locations(sky,['right','up','back','spread']);
-const place=document.querySelector('#place'), nav=document.querySelector('#places'), intro=document.querySelector('.intro'), pad=document.querySelector('.pad');
-let x=-9.75,y=0,z=27,yaw=.41,pitch=.13,started=false, drag=null, eyeHeight=1.64;
-const keys=new Set();
+const place=document.querySelector('#place');
+const nav=document.querySelector('#places');
+const intro=document.querySelector('.intro');
+const header=document.querySelector('header');
+const toolbar=document.querySelector('aside');
+const mapButton=document.querySelector('#map');
+const startButton=document.querySelector('#start');
+const description=document.querySelector('#description');
+let x=0,y=0,z=28,yaw=0,pitch=.13,started=false,eyeHeight=1.64;
+let walkTouch=null,lookTouch=null,forward=0,side=0;
+function resetTouches(){
+ for(const touch of [walkTouch,lookTouch]){
+  if(touch&&canvas.hasPointerCapture(touch.id))canvas.releasePointerCapture(touch.id);
+ }
+ walkTouch=lookTouch=null;
+ forward=side=0;
+}
+function setPlaces(open){
+ nav.hidden=!open;
+ mapButton.setAttribute('aria-expanded',String(open));
+ resetTouches();
+}
+function showIntro(open){
+ started=!open;
+ intro.hidden=!open;
+ header.hidden=toolbar.hidden=open;
+ setPlaces(false);
+ if(open)startButton.focus();
+}
 for(const [i,[name]] of destinations.entries()){
  const button=document.createElement('button');
  button.textContent=name;
- button.onclick=()=>{go(i);nav.hidden=true;canvas.focus();};
+ button.onclick=()=>{go(i);setPlaces(false);mapButton.focus();};
  nav.append(button);
 }
 function go(i){
  const [,sx,sz,sy,angle]=destinations[i];
- x=sx;y=sy;z=sz;yaw=angle;pitch=0;eyeHeight=y+1.64;keys.clear();
+ x=sx;y=sy;z=sz;yaw=angle;pitch=i===0?.13:0;eyeHeight=y+1.64;
+ resetTouches();
 }
-document.querySelector('#start').onclick=()=>{started=true;intro.hidden=true;pad.hidden=false;};
-document.querySelector('#map').onclick=()=>{nav.hidden=!nav.hidden;};
-document.querySelector('#help').onclick=()=>{intro.hidden=false;pad.hidden=true;started=false;keys.clear();};
-const supported=['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift'];
-addEventListener('keydown',e=>{
- const k=e.key.toLowerCase();
- if(k==='escape'){nav.hidden=true;keys.clear();}
- if(started&&supported.includes(k)){keys.add(k);e.preventDefault();}
-});
-addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-addEventListener('blur',()=>{keys.clear();drag=null;});
-for(const button of pad.querySelectorAll('button')){
- const key=button.dataset.key;
- button.onpointerdown=e=>{button.setPointerCapture(e.pointerId);keys.add(key);};
- button.onpointerup=button.onpointercancel=button.onlostpointercapture=()=>keys.delete(key);
-}
+startButton.onclick=()=>showIntro(false);
+mapButton.onclick=()=>setPlaces(nav.hidden);
+document.querySelector('#help').onclick=()=>{
+ description.hidden=true;
+ startButton.textContent='Weiter erkunden';
+ showIntro(true);
+};
+addEventListener('blur',resetTouches);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)resetTouches();});
 canvas.onpointerdown=e=>{
- if(started&&drag===null){canvas.setPointerCapture(e.pointerId);drag=[e.pointerId,e.clientX,e.clientY];}
+ if(e.pointerType!=='touch'||!started)return;
+ if(!nav.hidden){setPlaces(false);return;}
+ const isWalk=e.clientX<canvas.getBoundingClientRect().width/2;
+ if(isWalk?walkTouch:lookTouch)return;
+ canvas.setPointerCapture(e.pointerId);
+ const contact={id:e.pointerId,x:e.clientX,y:e.clientY};
+ if(isWalk)walkTouch=contact;
+ else lookTouch=contact;
 };
 canvas.onpointermove=e=>{
- if(!drag||drag[0]!==e.pointerId)return;
- yaw+=(e.clientX-drag[1])*.0048;
- pitch=Math.max(-1.22,Math.min(1.22,pitch+(drag[2]-e.clientY)*.0043));
- drag=[e.pointerId,e.clientX,e.clientY];
+ if(e.pointerId===walkTouch?.id){
+  const dx=e.clientX-walkTouch.x,dy=e.clientY-walkTouch.y;
+  const length=Math.hypot(dx,dy);
+  const strength=Math.min(1,Math.max(0,(length-7)/49));
+  side=length?dx/length*strength:0;
+  forward=length?-dy/length*strength:0;
+ }else if(e.pointerId===lookTouch?.id){
+  yaw+=(e.clientX-lookTouch.x)*.006;
+  pitch=Math.max(-1.22,Math.min(1.22,pitch+(lookTouch.y-e.clientY)*.0055));
+  lookTouch.x=e.clientX;
+  lookTouch.y=e.clientY;
+ }
 };
-canvas.onpointerup=canvas.onpointercancel=canvas.onlostpointercapture=e=>{if(drag?.[0]===e.pointerId)drag=null;};
+canvas.onpointerup=canvas.onpointercancel=canvas.onlostpointercapture=e=>{
+ if(e.pointerId===walkTouch?.id){walkTouch=null;forward=side=0;}
+ if(e.pointerId===lookTouch?.id)lookTouch=null;
+};
 function step(nx,nz){
  let best=-Infinity;
  for(const [l,r,f,b,h] of surfaces){
@@ -845,11 +884,10 @@ let last=0;
 function frame(ms){
  const dt=Math.min((ms-last)/1000,.035);last=ms;
  const sn=Math.sin(yaw),cs=Math.cos(yaw);
- if(started){
-  const forward=Number(keys.has('w')||keys.has('arrowup'))-Number(keys.has('s')||keys.has('arrowdown'));
-  const side=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft'));
-  const pace=dt*(keys.has('shift')?5.7:3.6)/(Math.hypot(forward,side)||1);
-  if(forward||side){step(x+(sn*forward+cs*side)*pace,z);step(x,z+(-cs*forward+sn*side)*pace);}
+ if(started&&(forward||side)){
+  const pace=dt*3.6;
+  step(x+(sn*forward+cs*side)*pace,z);
+  step(x,z+(-cs*forward+sn*side)*pace);
  }
  const region=y>7.5&&z>8?'Torturm':y<-.35?(x>11.1?'Kellertreppe':'Gewölbekeller'):x<-15.45?(y>6.8?'Turmplattform':'Westturm'):y>4.9?'Wehrgang':z<-12.7?'Rittersaal':x>4.35&&x<9.65&&z<-1.75&&z>-9.45?'Burgkapelle':z>13?'Burgbrücke':z>11?'Burgtor':'Burghof';
  if(place.textContent!==region)place.textContent=region;
@@ -858,7 +896,8 @@ function frame(ms){
  const ratio=Math.min(devicePixelRatio||1,1.45);
  const w=Math.round(canvas.clientWidth*ratio),h=Math.round(canvas.clientHeight*ratio);
  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
- const vertical=w<h?fov*1.22:fov, horizontal=vertical*w/h;
+ const aspect=w/Math.max(1,h);
+ const vertical=Math.max(fov,.46/aspect), horizontal=vertical*aspect;
  gl.clear(gl.DEPTH_BUFFER_BIT);
  gl.disable(gl.DEPTH_TEST);
  gl.useProgram(sky);gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);

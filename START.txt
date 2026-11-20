@@ -1,18 +1,15 @@
-BURG RABENFELS
+BURG RABENFELS V3
 
-index.html im Browser öffnen und „Burg betreten“ wählen. Das Projekt
-läuft offline und braucht WebGL. Für GitHub Pages index.html und burg.js
-zusammen in das Stammverzeichnis der Website legen.
+index.html auf einem Gerät mit Touchscreen in einem WebGL-fähigen Browser öffnen.
+Für GitHub Pages index.html und burg.js zusammen austauschen. Beide Dateien gehören
+in denselben Ordner. Der Rundgang braucht keine externen Bibliotheken.
 
-Computer: WASD oder Pfeiltasten. Zum Umsehen mit gedrückter
-Maustaste ziehen. Umschalt beschleunigt den Schritt.
-Handy: Pfeiltasten auf dem Bildschirm. Zum Umsehen über das Bild ziehen.
+Links auf der Spielfläche aufsetzen und ziehen. Die Ziehrichtung bestimmt, wohin
+du läufst. Beim Loslassen hältst du an. Rechts wischen, um dich umzusehen.
+Du kannst beide Gesten gleichzeitig benutzen.
 
-Der Eingang zum Rittersaal liegt geradeaus am Ende des Hofes.
-Die Burgkapelle steht rechts im Hof.
+Über „Orte“ erreichst du die wichtigsten Ziele direkt.
+Die Kapelle steht rechts im Hof. Der Eingang zum Rittersaal liegt geradeaus.
 Die Kellertreppe beginnt rechts beim Burgtor. Unten links abbiegen.
-Der Westturm liegt links am Hof. Die Treppe beginnt hinten im Turm.
-Der Wehrgang hat einen eigenen Aufgang hinten links im Hof.
-Die zwei Tortürme betrittst du vom Hof aus. Innen führen zwei
-Treppenläufe auf die jeweilige Plattform.
-„Orte“ öffnet die Direktwahl zu jedem Bereich.
+Der Westturm liegt links am Hof. Der Wehrgang hat hinten links einen Aufgang.
+Die beiden Tortürme betrittst du vom Hof aus.
