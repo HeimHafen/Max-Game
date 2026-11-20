@@ -276,14 +276,14 @@ export function createExteriorMaterialLibrary(THREE){
     return mat;
   }
   // Mature cool-taupe sandstone. Avoid the cream/whitewashed original shell.
-  const facadeWall=limestone('facade_limestone',0xd0b18c,.91,.57,2);
+  const facadeWall=limestone('facade_limestone',0xffe7c6,.91,.33,2);
   const wallStone=facadeWall;
-  const trim=limestone('trim_limestone',0xd6bb98,.88,.30,2);
+  const trim=limestone('trim_limestone',0xf5dfbd,.88,.24,2);
   const windowStone=limestone('trim_limestone',0xc9ae89,.91,.34,2);
   const ornamentStone=limestone('column_stone',0xece7df,.86,.36,2);
   const deepJoint=new THREE.MeshStandardMaterial({name:'Historischer_Moertelschatten',color:0x918980,roughness:1});
   const paintedSash=new THREE.MeshStandardMaterial(WINDOW_PAINT);
-  const dressedStone=limestone('trim_limestone',0xcead85,.91,.32,2);
+  const dressedStone=limestone('trim_limestone',0xf1d8b5,.91,.26,2);
   // Preserve the visually striking classical colonnades, but age their stone.
   const columnFinish=limestone('trim_limestone',0xd4b692,.90,.31,2);
   const capitalFinish=limestone('trim_limestone',0xd6bb98,.89,.32,2);
