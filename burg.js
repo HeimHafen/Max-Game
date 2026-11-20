@@ -16,7 +16,7 @@ if (!gl) {
 function run() {
 const vertices=[], surfaces=[], walls=[], lights=[];
 const stone=[.55,.51,.44], trim=[.67,.60,.49], dark=[.46,.41,.35], wood=[.38,.23,.13];
-const flag=[.33,.055,.045], iron=[.18,.19,.19], grass=[.32,.37,.22], gold=[.76,.53,.26];
+const iron=[.18,.19,.19], grass=[.32,.37,.22];
 let seed=2317;
 function rand(){ seed=(Math.imul(1664525,seed)+1013904223)>>>0; return seed/4294967296; }
 function tri(a,b,c,color,kind) {
@@ -38,30 +38,8 @@ function walk(x,z,w,d,y){surfaces.push([x-w/2,x+w/2,z-d/2,z+d/2,y]);}
 function floor(x,z,w,d,y,col=stone,kind=1){
  box(x,y-.23,z,w,.23,d,col,kind);walk(x,z,w,d,y);
 }
-function barrel(x,y,z,s=.64){
- const rings=[[0,.78],[.16,.95],[.7,1],[1.31,.95],[1.46,.78]];
- for(let i=0;i<12;i++){
-  const a=i*Math.PI/6,b=a+Math.PI/6;
-  const p=(ang,[h,r])=>[x+Math.cos(ang)*r*s,y+h*s,z+Math.sin(ang)*r*s];
-  for(let j=0;j<4;j++)quad(p(a,rings[j]),p(a,rings[j+1]),p(b,rings[j+1]),p(b,rings[j]),wood.map(c=>c*(.86+.23*(i%3)/2)),2);
-  tri([x,y+1.46*s,z],p(b,rings[4]),p(a,rings[4]),wood,2);
-  for(const [h,r] of [[.2,.967],[1.23,.968]])quad(p(a,[h,r]),p(a,[h+.08,r]),p(b,[h+.08,r]),p(b,[h,r]),iron);
- }
- walls.push([x-s,x+s,z-s,z+s,y,y+1.46*s]);
-}
-function torch(x,y,z,fixture=true){
- if(fixture){
- box(x,y-.42,z,.09,.55,.09,iron,0);
- box(x,y-.06,z,.24,.10,.24,iron,0);
- }
- for(let i=0;i<5;i++){
-  const a=i*1.256,b=a+1.256;
-  const A=[x+.08*Math.cos(a),y,z+.08*Math.sin(a)],B=[x+.08*Math.cos(b),y,z+.08*Math.sin(b)];
-  const C=[x+.102*Math.cos(b),y+.09,z+.102*Math.sin(b)],D=[x+.102*Math.cos(a),y+.09,z+.102*Math.sin(a)];
-  quad(A,B,C,D,[1,.77,.07],4);
-  tri(D,C,[x+.036,y+.24+.065*Math.cos(a),z],[1,.37,.07],4);
- }
- if(fixture)lights.push([x,y+.17,z,1]);
+function ambient(x,y,z,power=1){
+ lights.push([x,y,z,power]);
 }
 // Durchgehender gemauerter Bogen, mit sichtbaren Keilsteinen an beiden Stirnseiten.
 function arch(x,z,y,r,spring,depth,thick=.34){
@@ -115,32 +93,6 @@ function pitched(x,z,y,w,d,rise){
  quad(a,p,q,e,[.28,.32,.32],5);quad(b,c,q,p,[.28,.32,.32],5);
  tri(a,b,p,stone,1);tri(e,q,c,stone,1);
 }
-function table(x,z,w,d){
- box(x,.74,z,w,.13,d,wood,2,true);
- for(const dx of [-1,1])for(const dz of [-1,1])box(x+dx*(w/2-.15),0,z+dz*(d/2-.15),.14,.74,.14,wood,2,true);
-}
-function banner(x,y,z){
- const p=(u,v)=>[x+u,y+v,z+.065*Math.cos(u*12.)+.02*(2.5-v)];
- const left=-.88,right=.88;
- const cut=u=>.05+Math.max(0,1-Math.abs(u)*1.9)*.34;
- for(let i=0;i<24;i++){
-  const a=left+(right-left)*i/24,b=left+(right-left)*(i+1)/24;
-  quad(p(a,cut(a)),p(b,cut(b)),p(b,2.53),p(a,2.53),flag,7);
-  quad(p(a,cut(a)),p(b,cut(b)),p(b,cut(b)+.035),p(a,cut(a)+.035),gold,7);
- }
- box(x,y+2.54,z,2.03,.065,.08,gold);
- for(const offset of [-.78,.78]){
-  const a=p(offset,.21),b=p(offset,2.49);
-  quad([a[0]-.015,a[1],a[2]+.003],[a[0]+.015,a[1],a[2]+.003],[b[0]+.015,b[1],b[2]+.003],[b[0]-.015,b[1],b[2]+.003],gold,7);
- }
- const crest=[
-  [[-.62,1.73],[-.38,1.37],[-.10,1.24]],[[.62,1.73],[.10,1.24],[.38,1.37]],
-  [[-.62,1.73],[-.19,1.52],[-.10,1.24]],[[.62,1.73],[.10,1.24],[.19,1.52]],
-  [[0,1.68],[-.17,1.36],[.16,1.36]],[[0,1.12],[-.17,1.36],[.16,1.36]],
-  [[0,1.12],[-.13,.99],[.15,.99]],[[.015,1.63],[.045,1.76],[.23,1.68]]
- ];
- for(const points of crest)tri(...points.map(([u,v])=>[x+u,y+v,z+.16]),gold,7);
-}
 function cylinder(x,y,z,r,h,color,kind=0,r2=r,segments=12){
  for(let i=0;i<segments;i++){
   const a=i*2*Math.PI/segments,b=(i+1)*2*Math.PI/segments;
@@ -148,30 +100,6 @@ function cylinder(x,y,z,r,h,color,kind=0,r2=r,segments=12){
   quad(p(a,r,y),p(a,r2,y+h),p(b,r2,y+h),p(b,r,y),color,kind);
   tri([x,y+h,z],p(b,r2,y+h),p(a,r2,y+h),color,kind);
  }
-}
-function chandelier(x,z){
- const h=3.7, radius=1.18;
- for(let i=0;i<16;i++){
-  const a=i*Math.PI/8,b=(i+1)*Math.PI/8;
-  const p=(t,r,Y)=>[x+Math.cos(t)*r,Y,z+Math.sin(t)*r];
-  quad(p(a,radius,h),p(a,radius,h+.11),p(b,radius,h+.11),p(b,radius,h),iron);
-  quad(p(a,radius,h+.11),p(a,radius-.09,h+.11),p(b,radius-.09,h+.11),p(b,radius,h+.11),gold);
-  if(i%2===0){
-   const [cx,,cz]=p(a,radius,h);
-   cylinder(cx,h+.09,cz,.111,.045,iron);
-   cylinder(cx,h+.135,cz,.047,.20+rand()*.08,[.78,.65,.45]);
-   torch(cx,h+.36,cz,false);
-   // Die Ketten steigen von vier Punkten zur mittleren Aufhängung.
-   if(i%4===0){
-    for(let j=0;j<18;j++){
-     const t=j/18;
-     cylinder(cx+(x-cx)*t,h+.08+t*1.45,cz+(z-cz)*t,.037,.10,iron,0,.026,6);
-    }
-   }
-  }
- }
- cylinder(x,5.1,z,.046,1.22,iron);
- lights.push([x,h+.25,z,1.5]);
 }
 function rock(x,y,z,w,h,d){
  const rings=[];
@@ -204,7 +132,7 @@ function hillside(x,z,w,d,height){
 // Felsplateau, Graben und hölzerne Brücke.
 floor(0,1,156,150,-4.8,grass,3);
 hillside(-44,-28,21,24,17);
-hillside(45,-37,23,23,20);
+hillside(77,-46,21,23,20);
 hillside(-49,34,28,24,15);
 hillside(41,39,18,21,10);
 hillside(4,-99,28,25,19);
@@ -233,14 +161,14 @@ for(const s of [-1,1]){
 for(let i=0;i<260;i++){
  const x=(rand()-.5)*90,z=(rand()-.5)*89;
  if(Math.abs(x)<24 && Math.abs(z)<32)continue;
- if(Math.abs(x)<25&&z<-23&&z>-74)continue;
+ if(x>-25&&x<47&&z<-23&&z>-74)continue;
  const size=.5+rand()*3.5;
  rock(x,-4.85,z,size*.55,.25+rand()*2.2,size*.43);
 }
 for(let i=0;i<115;i++){
  const x=(rand()-.5)*155,z=(rand()-.5)*155;
  if(Math.abs(x)<29&&Math.abs(z)<36)continue;
- if(Math.abs(x)<25&&z<-23&&z>-74)continue;
+ if(x>-25&&x<47&&z<-23&&z>-74)continue;
  const h=2+rand()*5;
  box(x,-4.9,z,.22,h*.75,.22,wood,2);
  for(let k=0;k<3;k++){
@@ -294,34 +222,15 @@ for(const s of [-1,1]){
  floor(x,9.34,3.45,.62,7.7);
  floor(x-.845,11.725,1.76,4.15,7.7);
  box(x+.04,7.7,11.99,.13,.82,4.12,stone,1,true);
- torch(x-1.58,2.76,11.42);torch(x+1.58,5.36,11.86);
+ ambient(x-1.58,2.76,11.42);ambient(x+1.58,5.36,11.86);
  for(const a of [-1,1]){
   parapet(x,z+a*2.68,4.55,.38,7.68);
   parapet(x+a*2.02,z,.38,5.52,7.68);
  }
  for(const y of [3.45,5.28])box(x,y,front+.23,.16,.72,.035,[.12,.105,.085],0);
- banner(s*2.74,2.42,12.92);
- torch(s*2.3,2.36,13.02);
+ ambient(s*2.3,2.36,13.02);
 }
-// Hochgezogenes Fallgatter und geöffnete Torflügel mit Eisenbeschlägen.
-for(let i=-4;i<=4;i++){
- const x=i*.39, y=2.37+.36*Math.abs(i)/4;
- const available=1.68+Math.sqrt(4-x*x)-y;
- if(available>.15){
-  box(x,y,11.62,.073,available,.085,iron);
-  tri([x-.036,y,11.666],[x+.036,y,11.666],[x,y-.115,11.666],iron,0);
- }
-}
-box(0,3.01,11.62,2.82,.081,.11,iron);
-for(const sign of [-1,1]){
- const x=sign*1.89;
- box(x,0,10.76,.125,2.82,1.76,wood,2,true);
- for(const y of [.49,1.37,2.23]){
-  box(x-sign*.072,y,10.76,.03,.085,1.67,iron);
-  for(let i=0;i<4;i++)cylinder(x-sign*.089,y-.006,10.13+i*.42,.026,.06,gold,0,.020,7);
- }
-}
-// Palas mit offenem Torbogen, Balkendecke, Bänken und Kamin.
+// Palas mit offenem Torbogen, Balkendecke und gemauertem Kamin.
 floor(0,-19.3,23,14,0);
 portal(0,-12.55,0,6.06,3.8,6.8,.85);
 for(const side of [-1,1]){
@@ -363,19 +272,6 @@ for(let i=0;i<7;i++){
 box(0,6.3,-19.4,22,.25,13,wood,2);
 box(2.4,8,-24.5,1.5,3.9,1.3,stone);
 box(2.4,11.75,-24.5,1.8,.26,1.65,trim);
-for(const s of [-1,1]){
- table(s*4.9,-19.2,1.65,7.1);
- for(const j of [-1,1]){
-  box(s*4.9+j*1.21,.4,-19.2,.35,.11,6.5,wood,2,true);
-  for(const z of [-21.8,-16.6])box(s*4.9+j*1.21,0,z,.16,.42,.15,wood,2,true);
- }
- for(let j=0;j<6;j++){
-  box(s*4.9,.87,-22+j*1.1,.32,.065,.24,trim,0);
-  box(s*4.9+.3,.87,-22+j*1.1,.11,.14,.11,iron,0);
- }
- banner(s*5.55,2.32,-25.58);
- torch(s*8.5,2.45,-25.45);
-}
 for(const s of [-1,1])box(s*1.26,0,-24.95,.63,2.65,1.2,trim,1,true);
 box(0,2.36,-24.95,3.18,.54,1.29,trim);
 box(0,2.48,-24.23,3.46,.15,.26,trim);
@@ -383,24 +279,12 @@ box(0,2.85,-24.92,3.5,.19,1.38,trim);
 box(0,3.03,-25.13,2.73,1.55,.74,dark);
 box(0,4.57,-25.13,2.96,.18,.88,trim);
 for(const x of [-1.42,1.42])cylinder(x,2.47,-24.2,.128,.55,trim,1,.082,8);
-banner(0,3.04,-24.58);
-
 box(0,.02,-24.83,2.43,.14,1.48,dark);
-for(let i=0;i<5;i++){
- const x=(i-2)*.25;
- box(x,.15,-24.86,.22,.16,.57,wood.map(v=>v*.4),2);
- torch(x,.26,-24.86);
- lights.pop();
-}
-lights.push([0,.6,-24.47,1.8]);
-chandelier(0,-16.5);chandelier(0,-21.1);
 box(0,.16,-25.48,2,1.96,.06,[.22,.19,.16],1);
-box(0,.012,-20,1.85,.027,7.4,flag,0);
-for(const x of [-.82,.82])box(x,.04,-20,.036,.008,7.36,gold,0);
+for(const z of [-15,-19,-23])ambient(0,3.8,z,.85);
 // Westturm mit Treppe im Innenraum und frei begehbarer Aussichtsplattform.
 const tx=-19;
 floor(tx,0,7.4,10,0);
-portal(-15.52,0,0,0.01,.01,0.01,.01); // seitlicher Eingang wird unten mit echten Wandöffnungen gebaut
 for(const z of [-3.52,3.52])box(-15.28,0,z,.65,7.1,3.2,stone,1,true);
 box(-15.28,3.12,0,.65,3.98,4,stone,1,true);
 box(-22.74,0,0,.78,7.1,10.65,stone,1,true);
@@ -411,9 +295,8 @@ floor(-20.55,-4.61,2.35,.78,7.1);
 for(const z of [-4.94,4.94])parapet(tx,z,8.2,.46,7.1);
 for(const x of [-22.65,-15.28])parapet(x,0,.48,9.42,7.1);
 box(-19.02,7.1,.32,.17,.88,7.7,stone,1,true);
-torch(-21.7,2.8,1.4);torch(-21.7,5.8,-2.35);
-barrel(-17.5,0,-3.55);
-torch(-16.3,2.3,-4.7);
+ambient(-21.7,2.8,1.4);ambient(-21.7,5.8,-2.35);
+ambient(-16.3,2.3,-4.7);
 // Gewölbekeller unter dem Hof: gemauerter Tonnenbogen und Gurtbögen.
 const cy=-4.35;
 floor(-.2,-4.6,23,8.7,cy,dark);
@@ -436,27 +319,10 @@ for(const x of [-9,-4.8,-.6,3.6,7.8]){
   for(const s of [-1,1])quad(p(x+s*.2,a,0),p(x+s*.2,b,0),p(x+s*.2,b,.29),p(x+s*.2,a,.29),c);
  }
  for(const z of [-8.71,-.48])box(x,cy,z,.56,1.69,.4,trim,1,true);
- torch(x,cy+2.03,-8.35);
- torch(x+.8,cy+2.12,-.78);
+ ambient(x,cy+2.03,-8.35);
+ ambient(x+.8,cy+2.12,-.78);
 }
-for(let i=0;i<13;i++)barrel(-10+i*1.12,cy,-1.56,.48+rand()*.13);
-for(let i=0;i<4;i++)barrel(-9.8+i*1.38,cy,-7.44,.56);
-for(const x of [-6,1.7,6.9]){
- box(x,cy,-7.58,1,.69,.67,wood,2,true);
- for(const y of [.12,.48])box(x,cy+y,-7.23,1.04,.064,.04,iron,0);
-}
-// Gewölbeausbau: Lagergestelle mit abgestellten Fässern und vergitterter Nische.
-for(const x of [-9.6,-7.9,-6.2]){
- box(x,cy+.99,-1.04,1.67,.16,.9,wood,2);
- for(const dx of [-.72,.72])box(x+dx,cy,-1.05,.11,1.15,.81,wood,2,true);
- barrel(x,cy+1.15,-1.21,.39);
-}
-for(const dx of [-.22,.22]){
- box(-11.492,cy+.82,-4.65+dx,.08,1.75,.051,iron);
-}
-for(let j=0;j<5;j++)box(-11.48,cy+.82+j*.35,-4.65,.09,.05,.64,iron);
-box(-11.50,cy+.74,-4.65,.07,.13,.74,trim);
-torch(13.7,-1.5,-3.5);torch(13.66,-2.04,-7.53);
+ambient(13.7,-1.5,-3.5);ambient(13.66,-2.04,-7.53);
 // Fundament am Graben und niedrige Zugmauern neben dem Tor.
 for(const s of [-1,1]){
  box(s*9.18,-4.8,12,14.4,4.8,2.45,dark);
@@ -478,29 +344,9 @@ for(let i=0;i<28;i++){
  box(-12.21,h,-11.6+(i+.5)*.44,.13,.36,.445,trim,1,true);
 }
 box(-13.1,-.11,-11.8,1.9,.11,.4,trim);
-box(-6.3,0,-5.4,2.05,.49,1.78,stone,1,true);
-box(-6.3,.49,-5.4,1.86,.63,1.6,stone,1,true);
-box(-6.3,1.12,-5.4,2.15,.17,1.9,trim);
-box(-6.3,1.29,-5.4,1.61,.02,1.38,[.11,.16,.15],0);
-for(const x of [-7.18,-5.42])box(x,1.30,-5.4,.12,1.72,.17,wood,2);
-box(-6.3,2.95,-5.4,2.05,.16,.17,wood,2);
-box(-6.3,1.35,-5.4,.033,1.58,.033,wood,2);
-barrel(-7.73,0,-5.68,.58);
 for(const x of [-10.52,-4.08,4.08,10.52]){
  box(x,0,-12.01,.43,5.54,.47,trim);
  box(x,5.38,-12.01,.53,.22,.59,trim);
-}
-for(const [x,z] of [[-9.5,-10],[10.4,-10.55],[-10.8,8.3],[7.6,9.1]])barrel(x,0,z);
-for(const x of [-7.25,7.25]){
- banner(x,2.58,-12.06);
- torch(x*.58,2.48,-11.99);
-}
-for(const s of [-1,1]){
- const x=s*10.25;
- cylinder(x,-3.7,17,.115,7.67,wood,2,.087);
- cylinder(x,3.92,17,.12,.28,gold,0,0,8);
- box(x,3.72,17,1.68,.085,.09,wood,2);
- banner(x,1.25,17.05);
 }
 // Hofkapelle mit steilem Schieferdach, Blickachse zum Fenster und offenem Portal.
 const chapelX=7, chapelZ=-5.66;
@@ -522,28 +368,13 @@ for(const dx of [-.77,.77]){
 arch(7,-1.04,7.11,.63,.12,.54,.20);
 box(7,7.95,-1.04,2.17,.24,.76,trim);
 pitched(7,-1.04,8.15,2.40,.88,1.17);
-cylinder(7,7.0,-.98,.32,.39,[.33,.28,.20],0,.18);
-cylinder(7,6.95,-.98,.09,.13,iron);
 for(const z of [-3.25,-5.55,-7.86]){
  arch(7,z,0,2.73,2.42,.30,.26);
  for(const x of [4.35,9.65])cylinder(x,0,z,.16,2.52,trim,1,.15,10);
 }
 floor(7,-8.67,3.13,1.6,.14,trim);
-box(7,.14,-9.02,1.76,.83,.61,stone,1,true);
-box(7,.89,-9.02,2.00,.15,.86,trim);
-for(const x of [6.38,7.62]){
- cylinder(x,1.04,-8.94,.074,.24,[.78,.65,.45]);
- torch(x,1.28,-8.94,false);
- lights.push([x,1.5,-8.85,.68]);
-}
-for(const x of [5.38,8.62]){
- for(const z of [-4.02,-5.37,-6.72]){
-  box(x,.42,z,1.28,.13,.34,wood,2,true);
-  box(x,.54,z+.15,1.28,.30,.09,wood,2);
-  for(const dx of [-.49,.49])box(x+dx,0,z,.09,.45,.28,wood,2,true);
- }
- torch(x,2.20,-9.14);
-}
+ambient(7,2.45,-7.7,.88);
+ambient(7,2.45,-3.65,.75);
 const glassColors=[[.13,.46,.66],[.35,.17,.43],[.81,.55,.22],[.18,.37,.50],[.65,.19,.18]];
 const windowZ=-9.406;
 const windowBottom=1.64, windowTop=4.36, glassWidth=1.62;
@@ -583,19 +414,23 @@ function doorAlongZ(x,z,y,length,opening,height){
  box(x,y+2.24,z,.61,.16,opening+.32,trim);
 }
 floor(0,-37.75,23,24,0);
-for(const x of [-7,7])torch(x+1.95,2.75,-26.60);
+for(const x of [-7,7])ambient(x+1.95,2.75,-26.60);
 for(const sign of [-1,1]){
  const x=sign*16.5;
  const names=sign<0?['Burgküche','Backstube','Vorratskammer']:['Wachstube','Schreibstube','Werkraum'];
  floor(x,-37.75,10,24,0);
- box(sign*21.46,-4.8,-37.75,.84,9.71,24.4,stone,1,true);
+ if(sign<0)box(-21.46,-4.8,-37.75,.84,9.71,24.4,stone,1,true);
+ else {
+  box(21.46,-4.8,-37.75,.84,4.8,24.4,stone);
+  doorAlongZ(21.46,-37.75,0,24.4,2.54,4.91);
+ }
  box(x,0,-25.84,10,4.9,.48,stone,1,true);
  for(const z of [-33.8,-41.6])box(sign*17.57,0,z,7.96,4.9,.43,stone,1,true);
  for(let i=0;i<3;i++){
   const z=-29.9-i*7.8;
   doorAlongZ(sign*13.74,z,0,7.8,1.74,4.9);
-  torch(sign*14.12,2.72,z+1.73);
-  torch(sign*21.0,2.88,z-1.55);
+  ambient(sign*14.12,2.72,z+1.73);
+  ambient(sign*21.0,2.88,z-1.55);
   newPlaces.push([names[i],sign*17.1,z,0,sign*Math.PI/2]);
  }
  for(const z of [-27.5,-32.7,-37.9,-43.1,-48.3]){
@@ -613,7 +448,14 @@ portal(0,-49.56,0,22.52,4.22,4.4,.59);
 for(const side of [-1,1]){
  box(side*11.34,0,-49.56,.19,4.4,.59,stone,1,true);
  box(side*17.55,0,-49.56,7.45,4.4,.59,stone,1,true);
- box(side*21.45,-4.8,-59.85,.86,13.6,20.6,stone,1,true);
+ if(side<0)box(-21.45,-4.8,-59.85,.86,13.6,20.6,stone,1,true);
+ else {
+  box(21.45,-4.8,-59.85,.86,4.8,20.6,stone);
+  doorAlongZ(21.45,-55.35,0,8.55,2.54,4.4);
+  box(21.45,0,-50.31,.86,4.4,1.54,stone,1,true);
+  box(21.45,0,-64.8,.86,4.4,10.85,stone,1,true);
+  box(21.45,4.4,-59.85,.86,4.4,20.6,stone,1,true);
+ }
 }
 box(0,-4.8,-69.95,43,13.6,.77,stone,1,true);
 for(const x of [-8.0,8.0]){
@@ -639,20 +481,42 @@ for(const [level,names] of northNames.entries()){
  const y=level*upper;
  for(const x of [-14.2,0,14.2]){
   portal(x,-62.13,y,14.2,2.25,4.4,.47);
-  torch(x+1.85,y+2.46,-61.78);
-  torch(x-2.35,y+2.44,-68.79);
+  ambient(x+1.85,y+2.46,-61.78);
+  ambient(x-2.35,y+2.44,-68.79);
   newPlaces.push([names[Math.round(x/14.2)+1],x,-65.8,y,0]);
  }
  for(const x of [-7.1,7.1])box(x,y,-66.03,.53,4.4,7.8,stone,1,true);
 }
 for(const x of [-17.4,-6,6,17.4]){
- torch(x,2.7,-51.3);
- torch(x,upper+2.7,-50.81);
+ ambient(x,2.7,-51.3);
+ ambient(x,upper+2.7,-50.81);
 }
 box(0,8.62,-59.85,43.65,.23,20.7,wood,2);
 pitched(0,-59.85,8.83,44.4,21.2,6.8);
 newPlaces.push(['Oberer Burghof',0,-38,0,0],['Nordhalle',0,-55,0,0],
  ['Obergeschoss',0,-60.8,upper,Math.PI],['Hofbalkon',0,-47.7,upper,Math.PI]);
+// Osthof mit einem zweiten Rückweg zur Hinterburg.
+const eastPlaces=[];
+floor(32.3,-48.85,22.6,33.0,0);
+floor(21.5,-48.85,.72,33.0,0);
+box(32.45,0,-32.48,22.4,4.8,.54,stone,1,true);
+box(32.45,0,-65.25,22.4,4.8,.54,stone,1,true);
+box(43.45,-4.8,-48.85,.78,9.6,33.35,stone,1,true);
+parapet(43.45,-48.85,.78,33.35,4.8);
+parapet(32.45,-32.48,22.4,.54,4.8);
+parapet(32.45,-65.25,22.4,.54,4.8);
+const eastNames=['Torstube Ost','Steinkammer','Lagerhalle','Nordkammer'];
+for(const [i,name] of eastNames.entries()){
+ const z=-36.6-i*8.15;
+ doorAlongZ(35.3,z,0,8.15,1.92,4.8);
+ ambient(39.4,3.2,z,1.05);
+ eastPlaces.push([name,39.4,z,0,-Math.PI/2]);
+}
+for(const z of [-40.675,-48.825,-56.975])box(39.36,0,z,8.12,4.8,.46,stone,1,true);
+for(const z of [-34,-41.4,-48.85,-56.3,-63.7])box(32.9,0,z,.44,4.8,.49,trim,1,true);
+box(38.15,4.7,-48.84,11.2,.23,33,wood,2);
+pitched(38.15,-48.84,4.93,11.46,33.2,2.9);
+eastPlaces.push(['Osthof',27,-46,0,0]);
 // Der Start ist bewusst weiter vor der Brücke positioniert.
 const destinations=[
  ['Burgbrücke',0,28,0,0],
@@ -665,10 +529,10 @@ const destinations=[
  ['Linker Torturm',-7.35,11.3,7.7,.3],
  ['Rechter Torturm',5.65,11.3,7.7,-.3],
  ['Burgkapelle',7,-2.64,0,0],
- ...newPlaces
+ ...newPlaces, ...eastPlaces
 ];
 // Das Sonnenlicht nutzt eine einmalig aus der Burggeometrie berechnete Tiefenkarte.
-const shadowSize=640, shadowWorld=130;
+const shadowSize=640, shadowWorld=154;
 const sunLength=Math.hypot(-.46,.73,.58);
 const sun=[-.46/sunLength,.73/sunLength,.58/sunLength];
 const sunRight=[sun[2]/Math.hypot(sun[0],sun[2]),0,-sun[0]/Math.hypot(sun[0],sun[2])];
@@ -736,7 +600,7 @@ float occlusion(vec2 uv,float d,float bias){
  return step(depth-bias,d);
 }
 float sunlight(vec3 point,vec3 normal){
- vec2 uv=vec2(dot(point,sunAcross),dot(point,sunVertical))/130.+.5;
+ vec2 uv=vec2(dot(point,sunAcross),dot(point,sunVertical))/154.+.5;
  if(any(greaterThan(abs(uv-.5),vec2(.496))))return 1.;
  float d=dot(point,sunDir);
  float bias=.18+.24*(1.-max(dot(normal,sunDir),0.));
@@ -795,12 +659,12 @@ void main(){
  float tower=step(-22.65,p.x)*step(p.x,-15.4)*step(abs(p.z),5.12)*step(p.y,7.02)*step(-.08,p.y);
  float chapel=step(-9.49,p.z)*step(p.z,-1.8)*step(4.31,p.x)*step(p.x,9.69)*step(p.y,5.2)*step(-.08,p.y);
  float shelter=max(underground*.98,max(chapel*.63,max(palas*.61,tower*.74)));
- vec3 lit=mix(vec3(.44,.48,.55)+vec3(.87,.70,.46)*sun,vec3(.25,.255,.28),shelter);
+ vec3 lit=mix(vec3(.44,.48,.55)+vec3(.87,.70,.46)*sun,vec3(.34,.345,.37),shelter);
  for(int i=0;i<12;i++){
   vec3 offset=lamps[i].xyz-p;
   float d=dot(offset,offset);
   float cosine=max(.26,dot(nn,normalize(offset+vec3(.0001))));
-  lit+=vec3(1.27,.64,.25)*lamps[i].w*cosine*(1.+.075*sin(time*9.+float(i)*2.1))/(.82+d*.36);
+  lit+=vec3(1.27,.64,.25)*lamps[i].w*cosine/(.82+d*.36);
  }
  float distance=length(p-eye);
  float fog=1.-exp(-distance*mix(.008,.012,shelter));
@@ -984,7 +848,9 @@ function frame(ms){
   return Math.abs(rx)>16&&Math.abs(z-rz)<3.85&&x*rx>0&&Math.abs(x)>14.03;
  });
  const rearName=room?.[0]??(z<-49.75?(y>4.0?'Obergeschoss':'Nordhalle'):y>4?'Hofbalkon':Math.abs(x)>11.45?'Arkadenweg':'Oberer Burghof');
- const region=rear?rearName:y>7.5&&z>8?'Torturm':y<-.35?(x>11.1?'Kellertreppe':'Gewölbekeller'):x<-15.45?(y>6.8?'Turmplattform':'Westturm'):y>4.9?'Wehrgang':z<-12.7?'Rittersaal':x>4.35&&x<9.65&&z<-1.75&&z>-9.45?'Burgkapelle':z>13?'Burgbrücke':z>11?'Burgtor':'Burghof';
+ const east=x>21.75&&z<-32.48&&z>-65.25;
+ const eastName=x>35.54?eastPlaces[Math.max(0,Math.min(3,Math.round((-36.6-z)/8.15)))][0]:'Osthof';
+ const region=east?eastName:rear?rearName:y>7.5&&z>8?'Torturm':y<-.35?(x>11.1?'Kellertreppe':'Gewölbekeller'):x<-15.45?(y>6.8?'Turmplattform':'Westturm'):y>4.9?'Wehrgang':z<-12.7?'Rittersaal':x>4.35&&x<9.65&&z<-1.75&&z>-9.45?'Burgkapelle':z>13?'Burgbrücke':z>11?'Burgtor':'Burghof';
  if(place.textContent!==region)place.textContent=region;
  eyeHeight+=(y+1.64-eyeHeight)*Math.min(1,dt*15);
  const right=[cs,0,sn],up=[-sn*Math.sin(pitch),Math.cos(pitch),cs*Math.sin(pitch)],back=[-sn*Math.cos(pitch),-Math.sin(pitch),cs*Math.cos(pitch)];

@@ -1,18 +1,12 @@
-BURG RABENFELS V4 — HINTERBURG
+BURG RABENFELS V5
 
 Für GitHub Pages index.html und burg.js gemeinsam austauschen.
 Links ziehen zum Laufen, rechts wischen zum Umsehen. Beide Gesten
 funktionieren gleichzeitig. Über „Orte“ sind die Ziele direkt erreichbar.
 
-Vom Rittersaal gelangst du links oder rechts am Kamin vorbei in den oberen
-Burghof. An beiden Hofseiten liegt ein überdachter Arkadenweg zu je drei
-Räumen. Beide Arkadenwege und das mittlere Hofportal führen zur Nordhalle.
+Der neue Osthof ist über zwei Durchgänge erreichbar. Einer führt durch
+die Schreibstube im östlichen Flügel der Hinterburg, der andere durch
+die Ostwand der Nordhalle. Vier leere Räume öffnen sich zum Osthof.
 
-In der Nordhalle erreichst du hinten drei Räume im Erdgeschoss. Zwei
-Treppen führen zur oberen Galerie, zu drei weiteren Räumen und zum
-Hofbalkon. Die Galerie verbindet beide Treppen.
-
-Den Gewölbekeller erreichst du weiterhin über die Kellertreppe an der
-Ostseite des vorderen Burghofs. Unten links abbiegen.
-
-Grundriss.jpg zeigt Erdgeschoss und Obergeschoss der Erweiterung.
+Der Gewölbekeller ist über die Treppe im vorderen Burghof erreichbar.
+Unten links abbiegen.
