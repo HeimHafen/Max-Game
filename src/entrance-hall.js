@@ -1,6 +1,6 @@
 import {addPortalDoors} from './portal-doors-v2.js';
 
-import {houseFront,houseRear,frontPartition,rearPartition,rearRoomSplit,interiorPartitionThickness} from './house-layout.js';
+import {houseFront,houseRear,frontPartition,rearPartition,terraceRoomHalf,interiorPartitionThickness} from './house-layout.js';
 const vestibuleHalf=1.85;
 
 const doorHeight=2.78;
@@ -58,8 +58,8 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   [0,hallZ,2*halfWidth-.55,4.14],
   [0,frontZ,3.22,frontDepth],
   ...[-1,1].map(side=>[side*(halfWidth+vestibuleHalf)/2,frontZ,halfWidth-vestibuleHalf-.52,frontDepth]),
-  [(rearRoomSplit-halfWidth)/2,rearZ,halfWidth+rearRoomSplit-.52,rearDepth],
-  [(rearRoomSplit+halfWidth)/2,rearZ,halfWidth-rearRoomSplit-.52,rearDepth]
+  [0,rearZ,2*terraceRoomHalf-.52,rearDepth],
+  ...[-1,1].map(side=>[side*(halfWidth+terraceRoomHalf)/2,rearZ,halfWidth-terraceRoomHalf-.52,rearDepth])
  ];
  for(const [x,z,w,d] of rooms){
   frame('Eingelegtes Bodenband',x,z,w,d,floorY+.018,.065,.008,border);
@@ -96,8 +96,9 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   wall('Innenwand',(left+halfWidth)/2,z,halfWidth-left,thickness);
  }
  partition(frontPartition,[[-7.1,1.55],[0,2.08],[7.1,1.55]]);
- partition(rearPartition,[[-7.1,1.55],[0,2.08]]);
- wall('Raumtrennwand',rearRoomSplit,rearZ,thickness,rearPartition-rear);
+ partition(rearPartition,[[-8.8,1.55],[0,2.08],[8.8,1.55]]);
+ doors.push(addPortalDoors(THREE,scene,mats,glass,cx,rearPartition,1,2.08,doorHeight,null,floorY));
+ for(const side of [-1,1])wall('Raumtrennwand',side*terraceRoomHalf,rearZ,thickness,rearPartition-rear);
  for(const sign of [-1,1]){
   wall('Windfangwand',sign*vestibuleHalf,(frontPartition+front)/2,thickness,front-frontPartition);
 
@@ -121,7 +122,7 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
  }
  for(const [x,z,power] of [
   [0,frontZ,24],[-8,hallZ,46],[0,hallZ,52],[8,hallZ,46],
-  ...[rearZ-3.5,rearZ+3.5].flatMap(z=>[[0,z,28],[-7.2,z,42],[7.2,z,42]]),
+  ...[rearZ-3.5,rearZ+3.5].flatMap(z=>[[0,z,28],[-8.8,z,42],[8.8,z,42]]),
   [-7.2,frontZ,34],[7.2,frontZ,34]
  ])pendant(x,z,power);
 
@@ -130,5 +131,5 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
 export function entranceHallRegion(x,z){
  if(z>frontPartition)return Math.abs(x)<vestibuleHalf?'Windfang':x<0?'Vorderer Raum links':'Vorderer Raum rechts';
  if(z>rearPartition)return 'Eingangshalle';
- return x<rearRoomSplit?'Hinteres Zimmer':'Terrassenzimmer';
+ return Math.abs(x)<terraceRoomHalf?'Terrassenzimmer':x<0?'Hinteres Zimmer links':'Hinteres Zimmer rechts';
 }

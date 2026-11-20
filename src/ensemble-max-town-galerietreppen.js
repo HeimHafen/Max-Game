@@ -1,4 +1,4 @@
-import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition,terraceHalf,terraceDepth,terraceOffset} from './house-layout.js';
+import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition,terraceHalf,terraceDepth} from './house-layout.js';
 import {addEntranceHall} from './entrance-hall.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
 import {addEntranceLanterns} from './entrance-lanterns-v2.js';
@@ -113,12 +113,12 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    for(let i=0;i<3;i++){
     const y=i*4.5,top=y+4.5;
     let cursor=left;
-    const centers=(!referenceFace&&i===0?[-9.3,-4.65,0,terraceOffset,9.85]:[-9.3,-4.65,0,4.65,9.3]).map(offset=>cx+offset);
+    const centers=[-9.3,-4.65,0,4.65,9.3].map(offset=>cx+offset);
     for(const x of centers){
-     if(!referenceFace&&i===0&&x===cx+terraceOffset){
-      const lo=cx+terraceOffset-terraceHalf,hi=cx+terraceOffset+terraceHalf;
+     if(!referenceFace&&i===0&&x===cx){
+      const lo=cx-terraceHalf,hi=cx+terraceHalf;
       mesh('Kalksteinfassade',(cursor+lo)/2,2.25,z,lo-cursor,4.5,thick,mats.facadeWall,true);
-      mesh('Sturz des Terrassenzimmers',cx+terraceOffset,4.35,z,2*terraceHalf,.30,thick,mats.facadeWall,true);
+      mesh('Sturz des Terrassenzimmers',cx,4.35,z,2*terraceHalf,.30,thick,mats.facadeWall,true);
       cursor=hi;
       continue;
      }
@@ -223,7 +223,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   for(const z of [front,rear]){
    const outward=z===front?1:-1;
    const gap=z===front?1.10:terraceHalf;
-   const axis=z===front?cx:cx+terraceOffset;
+   const axis=z===front?cx:cx;
    for(const [lo,hi] of [[left,axis-gap],[axis+gap,right]]){
     mesh('Fassadensockel',(lo+hi)/2,.29,z+outward*.10,hi-lo,.58,.48,mats.shade);
    }
@@ -308,8 +308,8 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    mesh('Gaubensohlbank',x,15.51,face,1.58,.12,.30,mats.trim);
    mesh('Anthrazithaube der Gaube',x,16.97,z-side*.59,2.17,.16,2.74,roofCover);
   }
-  const bayX=cx+terraceOffset,doorZ=rear-terraceDepth;
-  const halfDoor=1.075;
+  const bayX=cx,doorZ=rear-terraceDepth;
+  const halfDoor=1.35;
   const line=[
    [-terraceHalf,-rear],[-terraceHalf,-doorZ],[-halfDoor,-doorZ],
    [halfDoor,-doorZ],[terraceHalf,-doorZ],[terraceHalf,-rear]
@@ -333,7 +333,9 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     ['Erkersockel aus Kalkstein',.37,.74,.31,mats.facadeWall],
     ['Profilierte Fensterbank',.73,.12,.40,mats.trim],
     ['Breites Fensterglas',1.96,2.36,.024,glass],
-    ['Anthrazitfarbener Fensterriegel',2.54,.065,.094,mats.paintedSash],
+    ['Unterer Rahmen des Fensters',.795,.078,.105,mats.paintedSash],
+    ['Oberer Rahmen des Fensters',3.105,.084,.105,mats.paintedSash],
+    ['Anthrazitfarbener Fensterriegel',2.54,.055,.094,mats.paintedSash],
     ['Kalksteinsturz des Erkers',3.69,1.05,.34,mats.facadeWall],
     ['Umlaufendes Erkerprofil',4.18,.135,.44,mats.trim],
     ['Anthrazitfarbene Dachkante',4.37,.18,.40,roofCover]
@@ -342,6 +344,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     piece.rotation.y=angle;
     if(material===glass)piece.castShadow=false;
    }
+   mesh('Feine Mittelsprosse des Erkers',x,1.96,z,.055,2.35,.096,mats.paintedSash).rotation.y=angle;
    mesh('Kollision Erkerfenster',x,1.38,z,b-a+.045,2.76,Math.abs(zb-za)+.09,mats.facadeWall,true).visible=false;
 
   }

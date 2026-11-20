@@ -1,4 +1,4 @@
-import {houseWidth,houseFront,houseRear,terraceDepth,terraceOffset} from './house-layout.js';
+import {houseWidth,houseFront,houseRear,terraceDepth} from './house-layout.js';
 import {entranceHallRegion} from './entrance-hall.js';
 import {balconyLevel} from './front-balcony-v2.js';
 import {engravedGableMaterial} from './inscription.js';
@@ -242,6 +242,6 @@ function buildGarden(scene){
  for(const x of [-10.34,10.34])plane(x,-.027,(21.75+houseRear-terraceDepth-1.6)/2,1.55,21.75-houseRear+terraceDepth+1.6,sidePaving);
  for(const x of [-houseAxis,houseAxis]){
   plane(x,-.018,18.6,2.5,5.4,material('paving',.80,[1,2]));
-  plane(x+terraceOffset,-.018,houseRear-terraceDepth-.96,2.5,2.12,material('paving',.80,[1,1]));
+  plane(x,-.018,houseRear-terraceDepth-.96,2.5,2.12,material('paving',.80,[1,1]));
  }
 }
