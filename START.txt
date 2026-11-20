@@ -1,7 +1,7 @@
 MAX-TOWN — RABENFELS MIT HERRENHAUSGRAFIK
 
 Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
-auf GitHub Pages kopieren. index.html, src/, assets/ und vendor/ gehören
+auf GitHub Pages kopieren. index.html, orangerie-20261121/, assets/ und vendor/ gehören
 zusammen. Die Seite läuft über HTTP oder HTTPS.
 
 Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Unter dem Portikus rahmen drei große Steinkassetten die mittige Laternenrosette.
@@ -24,3 +24,6 @@ Die Eingangshalle verbindet vier Seitenräume und den mittleren Gartengang.
 
 Beide Häuser haben ein steiles Walmdach mit Gauben und anthrazitfarbene Rundbogenfenster in der Halle.
 Der rechteckige Vorbau sitzt mittig im Terrassenzimmer und ragt 2,85 Einheiten in den Garten.
+
+Neuer Einstieg: Die Startseite und das Hilfemenü zeigen „Version Orangerie · 21.11.2026“.
+Die Gartenseite beider Häuser ist direkt über Orte → Orangerie links/rechts erreichbar.
