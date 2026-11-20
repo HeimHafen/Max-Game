@@ -14,5 +14,7 @@ Links ziehen zum Laufen, rechts wischen zum Umsehen.
 Zum Vorplatz stehen massive Eichentüren, zum Garten verglaste Flügeltüren.
 Alle Eingänge öffnen bei Annäherung automatisch.
 
-Beide Häuser haben breite, gerade Kalksteintreppen und offene Galerien bis ins zweite Obergeschoss.
+Beide Häuser sind 25 statt 15 Einheiten breit und haben fünf Fassadenachsen.
+Eichentür, Balkon und verglaste Balkontür liegen auf der mittleren Achse.
+Die Häuser haben durchgehende Geschossböden ohne Innentreppen.
 Über Orte → Balkonzimmer links oder rechts gelangst du direkt zum jeweiligen Balkon.

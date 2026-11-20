@@ -1,5 +1,4 @@
 import {balconyLevel} from './front-balcony-v2.js';
-import {upperFloor} from './open-stairhall-v4.js';
 import {engravedGableMaterial} from './inscription.js';
 import * as THREE from '../vendor/three/build/three.module.js';
 import {GLTFLoader} from '../vendor/three/examples/jsm/loaders/GLTFLoader.js';
@@ -9,7 +8,7 @@ import {buildSky} from './sky-atmosphere.js';
 import {buildPorticoLantern} from './portico-lantern-v3.js';
 import {addCofferedCeiling,lanternAxis} from './coffered-ceiling-v2.js';
 import {loadGardenMaple} from './garden-maple.js';
-import {buildEnsemble,houseAxis} from './ensemble-max-town-galerietreppen.js';
+import {buildEnsemble,houseAxis,houseWidth,upperFloor} from './ensemble-max-town-galerietreppen.js';
 
 const canvas=document.querySelector('canvas');
 const launch=document.querySelector('#start');
@@ -38,7 +37,7 @@ async function run(){
  sun.castShadow=true;
  const shadow=mobile?1024:2048;
  sun.shadow.mapSize.set(shadow,shadow);
- Object.assign(sun.shadow.camera,{left:-48,right:48,top:48,bottom:-48,near:1,far:160});
+ Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:160});
  sun.shadow.camera.updateProjectionMatrix();
  sun.shadow.bias=-.0002;
  sun.shadow.normalBias=.023;
@@ -72,7 +71,7 @@ async function run(){
  }).catch(error=>console.warn('Gartenbäume konnten nicht geladen werden.',error));
 
  const destinations=[
-  ['Vorplatz',0,71,0,0],['Portikus',0,16,.86,0],['Garten',0,-12,0,Math.PI],
+  ['Vorplatz',0,77,0,0],['Portikus',0,16,.86,0],['Garten',0,-12,0,Math.PI],
   ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Linkes Haus',-houseAxis,8,0,0],['Rechtes Haus',houseAxis,8,0,0]
  ];
 const place=document.querySelector('#place');
@@ -83,7 +82,7 @@ const toolbar=document.querySelector('aside');
 const mapButton=document.querySelector('#map');
 const startButton=document.querySelector('#start');
 const description=document.querySelector('#description');
-let x=0,y=0,z=71,yaw=0,pitch=.11,started=false,eyeHeight=1.64;
+let x=0,y=0,z=77,yaw=0,pitch=.11,started=false,eyeHeight=1.64;
 let walkTouch=null,lookTouch=null,forward=0,side=0;
 function resetTouches(){
  for(const touch of [walkTouch,lookTouch]){
@@ -193,8 +192,7 @@ function step(nx,nz){
   let region='Vorplatz';
   if(y>upperFloor-.10)region='Zweites Obergeschoss';
   else if(y>balconyLevel-.10)region=z>16.27?'Balkon':'Erstes Obergeschoss';
-  else if(y>.15&&Math.abs(Math.abs(x)-houseAxis)<7.2)region='Treppenhaus';
-  else if(Math.abs(Math.abs(x)-houseAxis)<7.2&&z>1.3&&z<15.7)region=x<0?'Linkes Haus':'Rechtes Haus';
+  else if(Math.abs(Math.abs(x)-houseAxis)<houseWidth/2-.3&&z>1.3&&z<15.7)region=x<0?'Linkes Haus':'Rechtes Haus';
   else if(Math.abs(x)<8.55&&z>=11.8&&z<=20.54)region='Portikus';
   else if(z<10)region='Garten';
   if(place.textContent!==region)place.textContent=region;
@@ -234,10 +232,10 @@ function buildGarden(scene){
   scene.add(item);
  }
  plane(0,-.056,0,250,225,material('grass',.96,[24,24]));
- plane(0,-.017,48.6,3.8,56.2,material('paving',.80,[1.1,15.68]));
+ plane(0,-.017,51.6,3.8,62.2,material('paving',.80,[1.1,15.68]));
  plane(0,-.017,-26.05,3.8,72,material('paving',.80,[1.1,20]));
- const crossPaving=material('paving',.80,[16,1]);
- for(const z of [-.6,21.45])plane(0,-.025,z,55,2.05,crossPaving);
+ const crossPaving=material('paving',.80,[22,1]);
+ for(const z of [-.6,21.45])plane(0,-.025,z,2*houseAxis+houseWidth+4,2.05,crossPaving);
  const sidePaving=material('paving',.80,[1,7]);
  for(const x of [-10.34,10.34])plane(x,-.027,10.35,1.55,22.8,sidePaving);
  for(const x of [-houseAxis,houseAxis]){

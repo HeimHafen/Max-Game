@@ -1,11 +1,12 @@
-import {addOpenStairhall} from './open-stairhall-v4.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
 import {addEntranceLanterns} from './entrance-lanterns-v2.js';
 import {addPortalDoors,createOakFinish} from './portal-doors-v2.js';
 import {addPorticoColumn} from './portico-columns-v2.js';
 
 // Das Nordportal stammt aus dem Originalmodell des Herrenhauses V97.
-export const houseAxis=19.6;
+export const houseWidth=25;
+export const houseAxis=12.1+houseWidth/2;
+export const upperFloor=9.06;
 
 export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=mats.facadeWall){
  const surfaces=[[-80,80,-90,95,0]], walls=[], doors=[];
@@ -95,9 +96,9 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
 
  const oak=createOakFinish(THREE);
  function house(cx){
-  const width=15, left=cx-width/2,right=cx+width/2;
+  const width=houseWidth, left=cx-width/2,right=cx+width/2;
   const front=16,rear=1, thick=.55;
-  const centers=[cx-4.4,cx,cx+4.4];
+  const centers=[-2,-1,0,1,2].map(bay=>cx+bay*4.65);
   for(const z of [front,rear]){
    const outward=z===front?1:-1;
    const referenceFace=z===front;
@@ -166,7 +167,8 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   }
   for(const z of [front,rear]){
    const outward=z===front?1:-1;
-   for(const offset of [-4.29,4.29])mesh('Fassadensockel',cx+offset,.29,z+outward*.10,6.37,.58,.48,mats.shade);
+   const plinthWidth=width/2-1.10;
+   for(const side of [-1,1])mesh('Fassadensockel',cx+side*(width/2-plinthWidth/2),.29,z+outward*.10,plinthWidth,.58,.48,mats.shade);
    for(const sign of [-1,1]){
     const x=cx+sign*1.24;
     mesh('Portalpilaster',x,1.55,z+outward*.377,.25,3.1,.22,mats.dressedStone);
@@ -215,13 +217,14 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    }
   }
   for(const [y,w,d,h] of [[13.28,15.22,15.43,.14],[13.38,15.36,15.57,.09],[13.51,15.58,15.79,.18],[13.638,15.68,15.89,.08],[13.72,15.90,16.10,.085]]){
-   mesh('Mehrstufiges Dachgesims',cx,y,8.5,w,h,d,mats.trim);
+   mesh('Mehrstufiges Dachgesims',cx,y,8.5,width+w-15,h,d,mats.trim);
   }
-  mesh('Traufblech',cx,13.752,8.5,15.5,.045,15.64,mats.roof);
+  mesh('Traufblech',cx,13.752,8.5,width+.5,.045,15.64,mats.roof);
   const eave=13.77,ridge=15.02;
+  const eaveX=width/2+.25;
   const points=[
-   [-7.75,eave,.68],[7.75,eave,.68],[7.75,eave,16.32],[-7.75,eave,16.32],
-   [-2.6,ridge,8.5],[2.6,ridge,8.5]
+   [-eaveX,eave,.68],[eaveX,eave,.68],[eaveX,eave,16.32],[-eaveX,eave,16.32],
+   [-(eaveX-5.15),ridge,8.5],[eaveX-5.15,ridge,8.5]
   ];
   const roofGeometry=new THREE.BufferGeometry();
   const faces=[0,4,5,0,5,1,1,5,2,2,5,4,2,4,3,3,4,0];
@@ -237,9 +240,14 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    mesh('Schornstein',cx+offset,14.39,7.6,1.07,1.2,.93,mats.facadeWall);
    mesh('Schornsteinkrone',cx+offset,15.03,7.6,1.29,.18,1.17,mats.trim);
   }
-  mesh('Erdgeschoss',cx,.025,8.5,14.42,.05,14.42,mats.stairStone);
+  for(const [level,height] of [[.05,.05],[balconyLevel,.20],[upperFloor,.20]]){
+   const half=width/2-.38;
+   mesh('Durchgehender Geschossboden',cx,level-height/2,8.51,2*half,height,14.46,mats.stairStone);
+   floor(cx-half,cx+half,1.28,15.74,level);
+  }
+  mesh('Balkonschwelle',cx,balconyLevel-.05,15.875,2.44,.10,.29,mats.stairStone);
+  floor(cx-1.22,cx+1.22,15.73,16.02,balconyLevel);
   addFrontBalcony(THREE,scene,mats,mesh,floor,cx,front);
-  addOpenStairhall(THREE,scene,mats,mesh,floor,cx,oak);
  }
  house(-houseAxis);house(houseAxis);
  return {portico,surfaces,walls,doors};
