@@ -1,4 +1,3 @@
-import {cellarLevel,cutOpening,stairOpening,stairCenter,stairViewZ,stairViewY} from './cellar.js';
 import {houseWidth,houseFront,houseRear} from './house-layout.js';
 import {entranceHallRegion} from './entrance-hall.js';
 import {balconyLevel} from './front-balcony-v2.js';
@@ -75,7 +74,7 @@ async function run(){
 
  const destinations=[
   ['Vorplatz',0,77,0,0],['Portikus',0,16,.86,0],['Garten',0,-12,0,Math.PI],
-  ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Treppenansicht links',stairCenter(-houseAxis),stairViewZ,stairViewY,0,.075],['Treppenansicht rechts',stairCenter(houseAxis),stairViewZ,stairViewY,0,.075],['Kellerverbindung',0,2.05,cellarLevel,Math.PI/2],['Eingang linkes Haus',-houseAxis,18.5,0,0],['Eingang rechtes Haus',houseAxis,18.5,0,0]
+  ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Halle links',-houseAxis,3.5,.05,Math.PI/2],['Halle rechts',houseAxis,3.5,.05,Math.PI/2],['Eingang linkes Haus',-houseAxis,18.5,0,0],['Eingang rechtes Haus',houseAxis,18.5,0,0]
  ];
 const place=document.querySelector('#place');
 const nav=document.querySelector('#places');
@@ -193,8 +192,7 @@ function step(nx,nz){
    step(x,z+(-cs*forward+sn*side)*pace);
   }
   let region='Vorplatz';
-  if(y<-.15)region=y<cellarLevel+.10?'Kellerverbindung':'Kellertreppe';
-  else if(y>upperFloor-.10)region='Zweites Obergeschoss';
+  if(y>upperFloor-.10)region='Zweites Obergeschoss';
   else if(y>balconyLevel-.10)region=z>16.27?'Balkon':'Erstes Obergeschoss';
   else if(Math.abs(Math.abs(x)-houseAxis)<houseWidth/2-.3&&z>houseRear+.3&&z<houseFront-.3)region=entranceHallRegion(x-Math.sign(x)*houseAxis,z);
   else if(Math.abs(x)<8.55&&z>=11.8&&z<=20.54)region='Portikus';
@@ -235,18 +233,7 @@ function buildGarden(scene){
   item.receiveShadow=true;
   scene.add(item);
  }
- const grass=material('grass',.96,[24,24]);
- const grassSections=[-houseAxis,houseAxis].reduce((parts,axis)=>parts.flatMap(part=>cutOpening(part,stairOpening(axis))),[[-125,125,-112.5,112.5]]);
- for(const [l,r,n,f] of grassSections){
-  const ground=new THREE.PlaneGeometry(r-l,f-n);
-  const uv=ground.attributes.uv;
-  for(let i=0;i<uv.count;i++)uv.setXY(i,(l+125+uv.getX(i)*(r-l))/250,(112.5-f+uv.getY(i)*(f-n))/225);
-  const item=new THREE.Mesh(ground,grass);
-  item.position.set((l+r)/2,-.056,(n+f)/2);
-  item.rotation.x=-Math.PI/2;
-  item.receiveShadow=true;
-  scene.add(item);
- }
+ plane(0,-.056,0,250,225,material('grass',.96,[24,24]));
  plane(0,-.017,51.6,3.8,62.2,material('paving',.80,[1.1,15.68]));
  plane(0,-.017,-26.05,3.8,72,material('paving',.80,[1.1,20]));
  const crossPaving=material('paving',.80,[22,1]);

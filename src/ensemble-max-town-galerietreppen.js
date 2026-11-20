@@ -1,4 +1,3 @@
-import {addCellar,cutOpening,stairOpening} from './cellar.js';
 import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition} from './house-layout.js';
 import {addEntranceHall} from './entrance-hall.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
@@ -12,7 +11,7 @@ export const houseAxis=12.1+houseWidth/2;
 export const upperFloor=9.06;
 
 export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=mats.facadeWall){
- const surfaces=[-houseAxis,houseAxis].reduce((parts,axis)=>parts.flatMap(part=>cutOpening(part,stairOpening(axis))),[[-80,80,-90,95]]).map(part=>[...part,0]);
+ const surfaces=[[-80,80,-90,95,0]];
  const walls=[],doors=[];
  function floor(l,r,n,f,y){surfaces.push([l,r,n,f,y]);}
  function block(bounds){
@@ -121,8 +120,8 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
       doors.push(addPortalDoors(THREE,scene,mats,glass,x,z,outward,w,lintel-sill,null,sill));
      }else if(!entrance){
       mesh('Fensterbrüstung',x,(sill+y)/2,z,w,sill-y,thick,mats.facadeWall,true);
-      mesh('Fensterglas',x,(sill+lintel)/2,z,w-.035,lintel-sill,.035,glass,true).castShadow=false;
-      const gridFace=z+outward*.085;
+      mesh('Fensterglas',x,(sill+lintel)/2,z,w+.004,lintel-sill+.004,.035,glass,true).castShadow=false;
+      const gridFace=z+outward*.037;
       for(let k=0;k<=4;k++)mesh('Fenstersprosse',lo+w*k/4,(sill+lintel)/2,gridFace,.039,lintel-sill,.09,mats.paintedSash);
       for(let k=0;k<=5;k++)mesh('Fenstersprosse',x,sill+(lintel-sill)*k/5,gridFace,w,.044,.09,mats.paintedSash);
       mesh('Sohlbank',x,sill-.04,z+outward*.28,w+.31,.15,.41,mats.windowStone);
@@ -152,15 +151,48 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     const y=i*4.5,top=y+4.5,sill=y+1.01,lintel=y+3.47;
     let cursor=rear;
     // Die Stirnwände der Eingangshalle bleiben im Erdgeschoss geschlossen.
-    const windowCenters=i===0?sideWindowCenters.filter(z=>z+.84<rearPartition||z-.84>frontPartition):sideWindowCenters;
-    for(const z of windowCenters){
+    const windowCenters=i===0?sideWindowCenters.filter(z=>z+.84<rearPartition-.12||z-.84>frontPartition+.12):sideWindowCenters;
+    const arches=i===0?[houseMiddle]:[];
+    for(const z of [...windowCenters,...arches].sort((a,b)=>a-b)){
+     if(arches.includes(z)){
+      const half=1.52,sill=.58,spring=2.21,apex=3.73;
+      const lo=z-half,hi=z+half;
+      mesh('Seitenwand',x,2.25,(cursor+lo)/2,.48,4.5,lo-cursor,mats.facadeWall,true);
+      mesh('Rundbogenfenster-Brüstung',x,sill/2,z,.48,sill,2*half,mats.facadeWall,true);
+      function shaped(name,shape,depth,xFace,material){
+       const item=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:32}),material);
+       item.name=name;item.rotation.y=-Math.PI/2;item.position.set(xFace,0,z);
+       item.castShadow=material!==glass;item.receiveShadow=true;scene.add(item);
+      }
+      const pane=new THREE.Shape();
+      pane.moveTo(-half,sill);pane.lineTo(half,sill);pane.lineTo(half,spring);
+      pane.absarc(0,spring,half,0,Math.PI,false);pane.closePath();
+      shaped('Rundbogenglas',pane,.025,x+.012,glass);
+      mesh('Kollision Rundbogenfenster',x,(sill+apex)/2,z,.045,apex-sill,2*half,glass,true).visible=false;
+      const crown=new THREE.Shape();
+      crown.moveTo(-half,spring);crown.absarc(0,spring,half,Math.PI,0,true);
+      crown.lineTo(half,4.5);crown.lineTo(-half,4.5);crown.closePath();
+      shaped('Mauerwerk über Rundbogen',crown,.48,x+.24,mats.facadeWall);
+      for(const d of [-1,1]){
+       mesh('Rundbogenpfosten',x,(sill+spring)/2,z+d*(half-.035),.17,spring-sill,.07,mats.paintedSash);
+      }
+      for(const y of [sill,1.35,spring])mesh('Rundbogen-Quersprosse',x,y,z,.12,.055,2*half,mats.paintedSash);
+      mesh('Rundbogen-Mittelsprosse',x,(sill+apex)/2,z,.12,apex-sill,.055,mats.paintedSash);
+      const rim=new THREE.Shape();
+      rim.moveTo(half-.055,spring);rim.absarc(0,spring,half-.055,0,Math.PI,false);
+      rim.lineTo(-half-.10,spring);rim.absarc(0,spring,half+.10,Math.PI,0,true);rim.closePath();
+      shaped('Profilierter Steinbogen',rim,.56,x+.28,mats.trim);
+      mesh('Rundbogenfensterbank',x,sill-.03,z,.64,.13,2*half+.25,mats.windowStone);
+      cursor=hi;
+      continue;
+     }
      const w=1.68,lo=z-w/2,hi=z+w/2;
      mesh('Seitenwand',x,(y+top)/2,(cursor+lo)/2,.48,top-y,lo-cursor,mats.facadeWall,true);
      mesh('Seitliche Fensterbrüstung',x,(y+sill)/2,z,.48,sill-y,w,mats.facadeWall,true);
      mesh('Seitlicher Fenstersturz',x,(lintel+top)/2,z,.48,top-lintel,w,mats.facadeWall,true);
-     mesh('Seitliches Fensterglas',x+side*.06,(sill+lintel)/2,z,.036,lintel-sill,w-.04,glass,true).castShadow=false;
-     for(let k=0;k<=4;k++)mesh('Seitliche Fenstersprosse',x+side*.109,(sill+lintel)/2,lo+k*w/4,.09,lintel-sill,.04,mats.paintedSash);
-     for(let k=0;k<=5;k++)mesh('Seitliche Fenstersprosse',x+side*.109,sill+k*(lintel-sill)/5,z,.09,.043,w,mats.paintedSash);
+     mesh('Seitliches Fensterglas',x+side*.06,(sill+lintel)/2,z,.036,lintel-sill+.004,w+.004,glass,true).castShadow=false;
+     for(let k=0;k<=4;k++)mesh('Seitliche Fenstersprosse',x+side*.097,(sill+lintel)/2,lo+k*w/4,.09,lintel-sill,.04,mats.paintedSash);
+     for(let k=0;k<=5;k++)mesh('Seitliche Fenstersprosse',x+side*.097,sill+k*(lintel-sill)/5,z,.09,.043,w,mats.paintedSash);
      mesh('Seitliche Sohlbank',x+side*.25,sill-.055,z,.46,.14,w+.31,mats.windowStone);
      for(const edge of [lo-.05,hi+.05])mesh('Seitliche Laibung',x+side*.25,(sill+lintel)/2,edge,.15,lintel-sill,.105,mats.trim);
      mesh('Seitliches Sturzprofil',x+side*.25,lintel+.06,z,.21,.15,w+.32,mats.trim);
@@ -249,18 +281,15 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   for(const [level,height] of [[.05,.05],[balconyLevel,.20],[upperFloor,.20]]){
    const half=width/2-.38;
    const bounds=[cx-half,cx+half,rear+.28,front-.26];
-   const sections=level===.05?cutOpening(bounds,stairOpening(cx)):[bounds];
-   for(const [l,r,n,f] of sections){
+   const [l,r,n,f]=bounds;
     mesh('Geschossboden',(l+r)/2,level-height/2,(n+f)/2,r-l,height,f-n,mats.stairStone);
     floor(l,r,n,f,level);
-   }
   }
-  mesh('Balkonschwelle',cx,balconyLevel-.05,15.875,2.44,.10,.29,mats.stairStone);
-  floor(cx-1.22,cx+1.22,15.73,16.02,balconyLevel);
+  floor(cx-1.22,cx+1.22,front-.28,front+.17,balconyLevel);
   addEntranceHall(THREE,scene,mats,mesh,cx,width/2-.17,glass,doors);
   addFrontBalcony(THREE,scene,mats,mesh,floor,cx,front);
  }
  house(-houseAxis);house(houseAxis);
- addCellar(THREE,scene,mats,mesh,floor,houseAxis);
+
  return {portico,surfaces,walls,doors};
 }

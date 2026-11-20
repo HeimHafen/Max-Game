@@ -29,7 +29,7 @@ export function addFrontBalcony(THREE,scene,mats,mesh,floor,x,z){
   deck.castShadow=deck.receiveShadow=true;
   scene.add(deck);
  }
- mesh('Balkonschwelle',x,y-.048,z,2.44,.096,.62,mats.stairStone);
+ mesh('Balkonschwelle',x,y-.048,z-.045,2.44,.096,.56,mats.stairStone);
  for(let i=-11;i<=11;i++){
   const points=Array.from({length:13},(_,j)=>{
    const t=Math.PI*j/12;
@@ -40,7 +40,7 @@ export function addFrontBalcony(THREE,scene,mats,mesh,floor,x,z){
   relief.receiveShadow=true;
   scene.add(relief);
  }
- floor(x-2.97,x+2.97,z-.28,front+.10,y);
+ floor(x-2.84,x+2.84,z+.16,front,y);
  for(const sign of [-1,1]){
   const cx=x+sign*2.22;
   mesh('Konsolenauflager',cx,y-.43,z+.78,.73,.14,1.19,stone);

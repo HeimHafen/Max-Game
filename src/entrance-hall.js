@@ -1,9 +1,8 @@
-import {cutOpening,stairOpening} from './cellar.js';
 import {addPortalDoors} from './portal-doors-v2.js';
 
 import {houseFront,houseRear,frontPartition,rearPartition} from './house-layout.js';
 const vestibuleHalf=1.85;
-const rearRoomSplit=3.05;
+const rearRoomSplit=-vestibuleHalf;
 const doorHeight=2.78;
 const floorY=.05;
 const ceilingY=4.36;
@@ -25,10 +24,7 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
  const rearZ=(rearPartition+rear)/2;
  const frontDepth=front-frontPartition-.55,rearDepth=rearPartition-rear-.55;
  mesh('Verputzte Deckenuntersicht',cx,ceilingY-.019,(front+rear)/2,halfWidth*2,.042,front-rear,ceiling);
- const opening=stairOpening(cx);
- for(const [l,r,n,f] of cutOpening([cx-halfWidth,cx+halfWidth,rear,front],opening)){
-  mesh('Fugenbett',(l+r)/2,floorY+.003,(n+f)/2,r-l,.009,f-n,grout);
- }
+ mesh('Fugenbett',cx,floorY+.003,(rear+front)/2,2*halfWidth,.009,front-rear,grout);
  const columns=24,rows=26,tileWidth=2*halfWidth/columns,tileDepth=(front-rear)/rows;
  const tileSections=[];
  const colors=[0xcdbba4,0xd9c8b0,0xd4c1a9,0xc8b79f,0xdccdb8].map(color=>new THREE.Color(color));
@@ -36,9 +32,7 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   for(let col=0;col<columns;col++){
    const l=cx-halfWidth+col*tileWidth,n=rear+row*tileDepth;
    const color=colors[(col*13+row*7+col*row)%colors.length];
-   for(const section of cutOpening([l+.006,l+tileWidth-.006,n+.006,n+tileDepth-.006],opening)){
-    tileSections.push({section,color});
-   }
+   tileSections.push({section:[l+.006,l+tileWidth-.006,n+.006,n+tileDepth-.006],color});
   }
  }
  const tiles=new THREE.InstancedMesh(new THREE.BoxGeometry(1,.013,1),stone,tileSections.length);
@@ -55,19 +49,17 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   for(const side of [-1,1]){
    for(const [px,pz,width,depth] of [[cx+x,z+side*(d-breadth)/2,w,breadth],[cx+x+side*(w-breadth)/2,z,breadth,d-2*breadth]]){
     const bounds=[px-width/2,px+width/2,pz-depth/2,pz+depth/2];
-    for(const [l,r,n,f] of material===border?cutOpening(bounds,opening):[bounds]){
-     mesh(name,(l+r)/2,y,(n+f)/2,r-l,height,f-n,material);
-    }
+    const [l,r,n,f]=bounds;
+    mesh(name,(l+r)/2,y,(n+f)/2,r-l,height,f-n,material);
    }
   }
  }
  const rooms=[
   [0,hallZ,2*halfWidth-.55,4.14],
-  [0,frontZ,3.22,frontDepth],[0,rearZ,5.60,rearDepth],
-  ...[-1,1].flatMap(side=>[
-   [side*(halfWidth+vestibuleHalf)/2,frontZ,halfWidth-vestibuleHalf-.52,frontDepth],
-   [side*(halfWidth+rearRoomSplit)/2,rearZ,halfWidth-rearRoomSplit-.52,rearDepth]
-  ])
+  [0,frontZ,3.22,frontDepth],
+  ...[-1,1].map(side=>[side*(halfWidth+vestibuleHalf)/2,frontZ,halfWidth-vestibuleHalf-.52,frontDepth]),
+  [(rearRoomSplit-halfWidth)/2,rearZ,halfWidth+rearRoomSplit-.52,rearDepth],
+  [(rearRoomSplit+halfWidth)/2,rearZ,halfWidth-rearRoomSplit-.52,rearDepth]
  ];
  for(const [x,z,w,d] of rooms){
   frame('Eingelegtes Bodenband',x,z,w,d,floorY+.018,.065,.008,border);
@@ -104,10 +96,11 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   wall('Innenwand',(left+halfWidth)/2,z,halfWidth-left,thickness);
  }
  partition(frontPartition,[[-7.1,1.55],[0,2.08],[7.1,1.55]]);
- partition(rearPartition,[[-7.1,1.55],[0,2.08],[7.1,1.55]]);
+ partition(rearPartition,[[-7.1,1.55],[0,2.08]]);
+ wall('Raumtrennwand',rearRoomSplit,rearZ,thickness,rearPartition-rear);
  for(const sign of [-1,1]){
   wall('Windfangwand',sign*vestibuleHalf,(frontPartition+front)/2,thickness,front-frontPartition);
-  wall('Raumtrennwand',sign*rearRoomSplit,(rearPartition+rear)/2,thickness,rearPartition-rear);
+
  }
  doors.push(addPortalDoors(THREE,scene,mats,glass,cx,frontPartition,1,2.08,doorHeight,null,floorY));
  function pendant(x,z,power){
@@ -137,6 +130,5 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
 export function entranceHallRegion(x,z){
  if(z>frontPartition)return Math.abs(x)<vestibuleHalf?'Windfang':x<0?'Vorderer Raum links':'Vorderer Raum rechts';
  if(z>rearPartition)return 'Eingangshalle';
- if(Math.abs(x)<rearRoomSplit)return 'Gartengang';
- return x<0?'Hinterer Raum links':'Hinterer Raum rechts';
+ return x<rearRoomSplit?'Hinteres Zimmer':'Terrassenzimmer';
 }
