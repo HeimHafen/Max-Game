@@ -1,4 +1,4 @@
-import {cellarLevel,cutOpening,stairOpening} from './cellar.js';
+import {cellarLevel,cutOpening,stairOpening,stairCenter,stairViewZ,stairViewY} from './cellar.js';
 import {houseWidth,houseFront,houseRear} from './house-layout.js';
 import {entranceHallRegion} from './entrance-hall.js';
 import {balconyLevel} from './front-balcony-v2.js';
@@ -75,7 +75,7 @@ async function run(){
 
  const destinations=[
   ['Vorplatz',0,77,0,0],['Portikus',0,16,.86,0],['Garten',0,-12,0,Math.PI],
-  ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Kellerverbindung',0,2.05,cellarLevel,Math.PI/2],['Eingang linkes Haus',-houseAxis,18.5,0,0],['Eingang rechtes Haus',houseAxis,18.5,0,0]
+  ['Balkonzimmer links',-houseAxis,12,balconyLevel,Math.PI],['Balkonzimmer rechts',houseAxis,12,balconyLevel,Math.PI],['Treppenansicht links',stairCenter(-houseAxis),stairViewZ,stairViewY,0,.075],['Treppenansicht rechts',stairCenter(houseAxis),stairViewZ,stairViewY,0,.075],['Kellerverbindung',0,2.05,cellarLevel,Math.PI/2],['Eingang linkes Haus',-houseAxis,18.5,0,0],['Eingang rechtes Haus',houseAxis,18.5,0,0]
  ];
 const place=document.querySelector('#place');
 const nav=document.querySelector('#places');
@@ -113,8 +113,8 @@ for(const [i,[name]] of destinations.entries()){
  nav.append(button);
 }
 function go(i){
- const [,sx,sz,sy,angle]=destinations[i];
- x=sx;y=sy;z=sz;yaw=angle;pitch=i===0?.11:0;eyeHeight=y+1.64;
+ const [,sx,sz,sy,angle,tilt=i===0?.11:0]=destinations[i];
+ x=sx;y=sy;z=sz;yaw=angle;pitch=tilt;eyeHeight=y+1.64;
  resetTouches();
 }
 startButton.onclick=()=>showIntro(false);
