@@ -1,3 +1,4 @@
+import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition} from './house-layout.js';
 import {addEntranceHall} from './entrance-hall.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
 import {addEntranceLanterns} from './entrance-lanterns-v2.js';
@@ -5,7 +6,7 @@ import {addPortalDoors,createOakFinish} from './portal-doors-v2.js';
 import {addPorticoColumn} from './portico-columns-v2.js';
 
 // Das Nordportal stammt aus dem Originalmodell des Herrenhauses V97.
-export const houseWidth=25;
+
 export const houseAxis=12.1+houseWidth/2;
 export const upperFloor=9.06;
 
@@ -98,7 +99,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
  const oak=createOakFinish(THREE);
  function house(cx){
   const width=houseWidth, left=cx-width/2,right=cx+width/2;
-  const front=16,rear=1, thick=.55;
+  const front=houseFront,rear=houseRear, thick=.55;
   const centers=[-2,-1,0,1,2].map(bay=>cx+bay*4.65);
   for(const z of [front,rear]){
    const outward=z===front?1:-1;
@@ -149,7 +150,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     const y=i*4.5,top=y+4.5,sill=y+1.01,lintel=y+3.47;
     let cursor=rear;
     // Die Stirnwände der Eingangshalle bleiben im Erdgeschoss geschlossen.
-    const windowCenters=i===0?[3.65,13.35]:[3.65,8.5,13.35];
+    const windowCenters=i===0?sideWindowCenters.filter(z=>z+.84<rearPartition||z-.84>frontPartition):sideWindowCenters;
     for(const z of windowCenters){
      const w=1.68,lo=z-w/2,hi=z+w/2;
      mesh('Seitenwand',x,(y+top)/2,(cursor+lo)/2,.48,top-y,lo-cursor,mats.facadeWall,true);
@@ -165,7 +166,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     }
     mesh('Seitenwand',x,(y+top)/2,(cursor+front)/2,.48,top-y,front-cursor,mats.facadeWall,true);
    }
-   mesh('Seitlicher Sockel',x+side*.07,.29,8.5,.55,.58,15.1,mats.shade);
+   mesh('Seitlicher Sockel',x+side*.07,.29,houseMiddle,.55,.58,width+.1,mats.shade);
 
   }
   for(const z of [front,rear]){
@@ -206,7 +207,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     }else mesh('Umlaufendes Gurtgesims',cx,y,z,width+2*projection,height,thick+2*projection,mats.trim);
    }
    for(const x of [left+.17,right-.17]){
-    mesh('Seitliches Gurtgesims',x,y,8.5,.48+2*projection,height,14.98,mats.trim);
+    mesh('Seitliches Gurtgesims',x,y,houseMiddle,.48+2*projection,height,width-.02,mats.trim);
    }
   }
   for(const x of [left,right])for(const z of [rear,front]){
@@ -220,14 +221,14 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    }
   }
   for(const [y,w,d,h] of [[13.28,15.22,15.43,.14],[13.38,15.36,15.57,.09],[13.51,15.58,15.79,.18],[13.638,15.68,15.89,.08],[13.72,15.90,16.10,.085]]){
-   mesh('Mehrstufiges Dachgesims',cx,y,8.5,width+w-15,h,d,mats.trim);
+   mesh('Mehrstufiges Dachgesims',cx,y,houseMiddle,width+w-15,h,width+d-15,mats.trim);
   }
-  mesh('Traufblech',cx,13.752,8.5,width+.5,.045,15.64,mats.roof);
+  mesh('Traufblech',cx,13.752,houseMiddle,width+.5,.045,width+.64,mats.roof);
   const eave=13.77,ridge=15.02;
   const eaveX=width/2+.25;
   const points=[
-   [-eaveX,eave,.68],[eaveX,eave,.68],[eaveX,eave,16.32],[-eaveX,eave,16.32],
-   [-(eaveX-5.15),ridge,8.5],[eaveX-5.15,ridge,8.5]
+   [-eaveX,eave,rear-.32],[eaveX,eave,rear-.32],[eaveX,eave,front+.32],[-eaveX,eave,front+.32],
+   [-1,ridge,houseMiddle],[1,ridge,houseMiddle]
   ];
   const roofGeometry=new THREE.BufferGeometry();
   const faces=[0,4,5,0,5,1,1,5,2,2,5,4,2,4,3,3,4,0];
@@ -240,13 +241,13 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   roof.castShadow=roof.receiveShadow=true;
   scene.add(roof);
   for(const offset of [-4.1,4.1]){
-   mesh('Schornstein',cx+offset,14.39,7.6,1.07,1.2,.93,mats.facadeWall);
-   mesh('Schornsteinkrone',cx+offset,15.03,7.6,1.29,.18,1.17,mats.trim);
+   mesh('Schornstein',cx+offset,14.39,houseMiddle-.9,1.07,1.2,.93,mats.facadeWall);
+   mesh('Schornsteinkrone',cx+offset,15.03,houseMiddle-.9,1.29,.18,1.17,mats.trim);
   }
   for(const [level,height] of [[.05,.05],[balconyLevel,.20],[upperFloor,.20]]){
    const half=width/2-.38;
-   mesh('Durchgehender Geschossboden',cx,level-height/2,8.51,2*half,height,14.46,mats.stairStone);
-   floor(cx-half,cx+half,1.28,15.74,level);
+   mesh('Durchgehender Geschossboden',cx,level-height/2,houseMiddle+.01,2*half,height,width-.54,mats.stairStone);
+   floor(cx-half,cx+half,rear+.28,front-.26,level);
   }
   mesh('Balkonschwelle',cx,balconyLevel-.05,15.875,2.44,.10,.29,mats.stairStone);
   floor(cx-1.22,cx+1.22,15.73,16.02,balconyLevel);

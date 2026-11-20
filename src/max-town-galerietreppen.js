@@ -1,3 +1,4 @@
+import {houseWidth,houseFront,houseRear} from './house-layout.js';
 import {entranceHallRegion} from './entrance-hall.js';
 import {balconyLevel} from './front-balcony-v2.js';
 import {engravedGableMaterial} from './inscription.js';
@@ -9,7 +10,7 @@ import {buildSky} from './sky-atmosphere.js';
 import {buildPorticoLantern} from './portico-lantern-v3.js';
 import {addCofferedCeiling,lanternAxis} from './coffered-ceiling-v2.js';
 import {loadGardenMaple} from './garden-maple.js';
-import {buildEnsemble,houseAxis,houseWidth,upperFloor} from './ensemble-max-town-galerietreppen.js';
+import {buildEnsemble,houseAxis,upperFloor} from './ensemble-max-town-galerietreppen.js';
 
 const canvas=document.querySelector('canvas');
 const launch=document.querySelector('#start');
@@ -193,7 +194,7 @@ function step(nx,nz){
   let region='Vorplatz';
   if(y>upperFloor-.10)region='Zweites Obergeschoss';
   else if(y>balconyLevel-.10)region=z>16.27?'Balkon':'Erstes Obergeschoss';
-  else if(Math.abs(Math.abs(x)-houseAxis)<houseWidth/2-.3&&z>1.3&&z<15.7)region=entranceHallRegion(x-Math.sign(x)*houseAxis,z);
+  else if(Math.abs(Math.abs(x)-houseAxis)<houseWidth/2-.3&&z>houseRear+.3&&z<houseFront-.3)region=entranceHallRegion(x-Math.sign(x)*houseAxis,z);
   else if(Math.abs(x)<8.55&&z>=11.8&&z<=20.54)region='Portikus';
   else if(z<10)region='Garten';
   if(place.textContent!==region)place.textContent=region;
@@ -236,11 +237,11 @@ function buildGarden(scene){
  plane(0,-.017,51.6,3.8,62.2,material('paving',.80,[1.1,15.68]));
  plane(0,-.017,-26.05,3.8,72,material('paving',.80,[1.1,20]));
  const crossPaving=material('paving',.80,[22,1]);
- for(const z of [-.6,21.45])plane(0,-.025,z,2*houseAxis+houseWidth+4,2.05,crossPaving);
+ for(const z of [houseRear-1.6,21.45])plane(0,-.025,z,2*houseAxis+houseWidth+4,2.05,crossPaving);
  const sidePaving=material('paving',.80,[1,7]);
- for(const x of [-10.34,10.34])plane(x,-.027,10.35,1.55,22.8,sidePaving);
+ for(const x of [-10.34,10.34])plane(x,-.027,(21.75+houseRear-1.6)/2,1.55,21.75-houseRear+1.6,sidePaving);
  for(const x of [-houseAxis,houseAxis]){
   plane(x,-.018,18.6,2.5,5.4,material('paving',.80,[1,2]));
-  plane(x,-.018,.04,2.5,2.12,material('paving',.80,[1,1]));
+  plane(x,-.018,houseRear-.96,2.5,2.12,material('paving',.80,[1,1]));
  }
 }

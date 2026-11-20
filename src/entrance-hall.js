@@ -1,7 +1,6 @@
 import {addPortalDoors} from './portal-doors-v2.js';
 
-const frontPartition=12.35;
-const rearPartition=7.65;
+import {houseFront,houseRear,frontPartition,rearPartition} from './house-layout.js';
 const vestibuleHalf=1.85;
 const rearRoomSplit=3.05;
 const doorHeight=2.78;
@@ -19,10 +18,14 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
  const stone=new THREE.MeshStandardMaterial({roughness:.65});
  const bronze=new THREE.MeshStandardMaterial({color:0x513920,metalness:.58,roughness:.47});
  const shade=new THREE.MeshStandardMaterial({color:0xffe8c6,emissive:0xffca8d,emissiveIntensity:.45,roughness:.58});
- const front=15.73,rear=1.27;
+ const front=houseFront-.27,rear=houseRear+.27;
+ const hallZ=(frontPartition+rearPartition)/2;
+ const frontZ=(frontPartition+front)/2;
+ const rearZ=(rearPartition+rear)/2;
+ const frontDepth=front-frontPartition-.55,rearDepth=rearPartition-rear-.55;
  mesh('Verputzte Deckenuntersicht',cx,ceilingY-.019,(front+rear)/2,halfWidth*2,.042,front-rear,ceiling);
  mesh('Fugenbett',cx,floorY+.003,(front+rear)/2,halfWidth*2,.009,front-rear,grout);
- const columns=24,rows=16,tileWidth=2*halfWidth/columns,tileDepth=(front-rear)/rows;
+ const columns=24,rows=26,tileWidth=2*halfWidth/columns,tileDepth=(front-rear)/rows;
  const tiles=new THREE.InstancedMesh(new THREE.BoxGeometry(tileWidth-.012,.013,tileDepth-.012),stone,columns*rows);
  const transform=new THREE.Matrix4();
  const colors=[0xcdbba4,0xd9c8b0,0xd4c1a9,0xc8b79f,0xdccdb8].map(color=>new THREE.Color(color));
@@ -44,11 +47,11 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   }
  }
  const rooms=[
-  [0,10,2*halfWidth-.55,4.14],
-  [0,13.99,3.22,2.88],[0,4.45,5.60,5.84],
+  [0,hallZ,2*halfWidth-.55,4.14],
+  [0,frontZ,3.22,frontDepth],[0,rearZ,5.60,rearDepth],
   ...[-1,1].flatMap(side=>[
-   [side*(halfWidth+vestibuleHalf)/2,14.03,halfWidth-vestibuleHalf-.52,2.79],
-   [side*(halfWidth+rearRoomSplit)/2,4.45,halfWidth-rearRoomSplit-.52,5.84]
+   [side*(halfWidth+vestibuleHalf)/2,frontZ,halfWidth-vestibuleHalf-.52,frontDepth],
+   [side*(halfWidth+rearRoomSplit)/2,rearZ,halfWidth-rearRoomSplit-.52,rearDepth]
   ])
  ];
  for(const [x,z,w,d] of rooms){
@@ -57,7 +60,7 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   frame('Profiliertes Deckenfeld',x,z,w-.27,d-.27,ceilingY-.051,.11,.09,molding);
  }
  for(const x of [-8,-4,0,4,8]){
-  frame('Kassette der Eingangshalle',x,10,3.75,3.41,ceilingY-.054,.11,.097,molding);
+  frame('Kassette der Eingangshalle',x,hallZ,3.75,3.41,ceilingY-.054,.11,.097,molding);
  }
  function wall(name,x,z,w,d,bottom=floorY){
   mesh(name,cx+x,(bottom+ceilingY)/2,z,w,ceilingY-bottom,d,plaster,true);
@@ -88,8 +91,8 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
  partition(frontPartition,[[-7.1,1.55],[0,2.08],[7.1,1.55]]);
  partition(rearPartition,[[-7.1,1.55],[0,2.08],[7.1,1.55]]);
  for(const sign of [-1,1]){
-  wall('Windfangwand',sign*vestibuleHalf,(frontPartition+15.74)/2,thickness,15.74-frontPartition);
-  wall('Raumtrennwand',sign*rearRoomSplit,(rearPartition+1.27)/2,thickness,rearPartition-1.27);
+  wall('Windfangwand',sign*vestibuleHalf,(frontPartition+front)/2,thickness,front-frontPartition);
+  wall('Raumtrennwand',sign*rearRoomSplit,(rearPartition+rear)/2,thickness,rearPartition-rear);
  }
  doors.push(addPortalDoors(THREE,scene,mats,glass,cx,frontPartition,1,2.08,doorHeight,null,floorY));
  function pendant(x,z,power){
@@ -109,8 +112,9 @@ export function addEntranceHall(THREE,scene,mats,mesh,cx,halfWidth,glass,doors){
   scene.add(light);
  }
  for(const [x,z,power] of [
-  [0,14.12,24],[-8,10,46],[0,10,52],[8,10,46],[0,4.55,28],
-  [-7.2,14.1,34],[7.2,14.1,34],[-7.2,4.45,42],[7.2,4.45,42]
+  [0,frontZ,24],[-8,hallZ,46],[0,hallZ,52],[8,hallZ,46],
+  ...[rearZ-3.5,rearZ+3.5].flatMap(z=>[[0,z,28],[-7.2,z,42],[7.2,z,42]]),
+  [-7.2,frontZ,34],[7.2,frontZ,34]
  ])pendant(x,z,power);
 
 }
