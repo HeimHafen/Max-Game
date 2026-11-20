@@ -1,15 +1,18 @@
-BURG RABENFELS V3
+BURG RABENFELS V4 — HINTERBURG
 
-index.html auf einem Gerät mit Touchscreen in einem WebGL-fähigen Browser öffnen.
-Für GitHub Pages index.html und burg.js zusammen austauschen. Beide Dateien gehören
-in denselben Ordner. Der Rundgang braucht keine externen Bibliotheken.
+Für GitHub Pages index.html und burg.js gemeinsam austauschen.
+Links ziehen zum Laufen, rechts wischen zum Umsehen. Beide Gesten
+funktionieren gleichzeitig. Über „Orte“ sind die Ziele direkt erreichbar.
 
-Links auf der Spielfläche aufsetzen und ziehen. Die Ziehrichtung bestimmt, wohin
-du läufst. Beim Loslassen hältst du an. Rechts wischen, um dich umzusehen.
-Du kannst beide Gesten gleichzeitig benutzen.
+Vom Rittersaal gelangst du links oder rechts am Kamin vorbei in den oberen
+Burghof. An beiden Hofseiten liegt ein überdachter Arkadenweg zu je drei
+Räumen. Beide Arkadenwege und das mittlere Hofportal führen zur Nordhalle.
 
-Über „Orte“ erreichst du die wichtigsten Ziele direkt.
-Die Kapelle steht rechts im Hof. Der Eingang zum Rittersaal liegt geradeaus.
-Die Kellertreppe beginnt rechts beim Burgtor. Unten links abbiegen.
-Der Westturm liegt links am Hof. Der Wehrgang hat hinten links einen Aufgang.
-Die beiden Tortürme betrittst du vom Hof aus.
+In der Nordhalle erreichst du hinten drei Räume im Erdgeschoss. Zwei
+Treppen führen zur oberen Galerie, zu drei weiteren Räumen und zum
+Hofbalkon. Die Galerie verbindet beide Treppen.
+
+Den Gewölbekeller erreichst du weiterhin über die Kellertreppe an der
+Ostseite des vorderen Burghofs. Unten links abbiegen.
+
+Grundriss.jpg zeigt Erdgeschoss und Obergeschoss der Erweiterung.
