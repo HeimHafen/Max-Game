@@ -1,4 +1,4 @@
-RABENFELS MIT HERRENHAUSGRAFIK
+MAX-TOWN — RABENFELS MIT HERRENHAUSGRAFIK
 
 Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
 auf GitHub Pages kopieren. index.html, src/, assets/ und vendor/ gehören
