@@ -1,5 +1,4 @@
 export const balconyLevel=4.56;
-export const balconyHouse=-19.6;
 
 export function addFrontBalcony(THREE,scene,mats,mesh,floor,x,z){
  const y=balconyLevel,front=z+1.96,back=z+.25,side=2.84;
