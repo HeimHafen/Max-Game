@@ -11,4 +11,5 @@ Die Fenster der oberen Stockwerke gehören zur Fassade.
 
 Links ziehen zum Laufen, rechts wischen zum Umsehen.
 
-Die verglasten Doppelflügeltüren öffnen bei Annäherung automatisch.
+Zum Vorplatz stehen massive Eichentüren, zum Garten verglaste Flügeltüren.
+Alle Eingänge öffnen bei Annäherung automatisch.
