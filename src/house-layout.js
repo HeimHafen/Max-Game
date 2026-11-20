@@ -5,3 +5,6 @@ export const houseMiddle=(houseFront+houseRear)/2;
 export const frontPartition=houseMiddle+2.35;
 export const rearPartition=houseMiddle-2.35;
 export const sideWindowCenters=[-6,-1.25,3.5,8.25,13];
+
+export const terraceHalf=3.25;
+export const terraceDepth=1.85;

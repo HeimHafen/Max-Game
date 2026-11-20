@@ -1,4 +1,4 @@
-import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition} from './house-layout.js';
+import {houseWidth,houseFront,houseRear,houseMiddle,sideWindowCenters,frontPartition,rearPartition,terraceHalf,terraceDepth} from './house-layout.js';
 import {addEntranceHall} from './entrance-hall.js';
 import {addFrontBalcony,balconyLevel} from './front-balcony-v2.js';
 import {addEntranceLanterns} from './entrance-lanterns-v2.js';
@@ -109,6 +109,13 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     const y=i*4.5,top=y+4.5;
     let cursor=left;
     for(const x of centers){
+     if(!referenceFace&&x===cx&&i===0){
+      const lo=cx-terraceHalf,hi=cx+terraceHalf;
+      mesh('Kalksteinfassade',(cursor+lo)/2,2.25,z,lo-cursor,4.5,thick,mats.facadeWall,true);
+      mesh('Sturz des Terrassenzimmers',cx,4.35,z,2*terraceHalf,.30,thick,mats.facadeWall,true);
+      cursor=hi;
+      continue;
+     }
      const entrance=x===cx&&i===0;
      const balconyDoor=x===cx&&z===front&&i===1;
      const w=entrance?2.15:balconyDoor?2.44:1.74;
@@ -155,7 +162,7 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
     const arches=i===0?[houseMiddle]:[];
     for(const z of [...windowCenters,...arches].sort((a,b)=>a-b)){
      if(arches.includes(z)){
-      const half=1.52,sill=.58,spring=2.21,apex=3.73;
+      const half=1.28,sill=.18,spring=2.61,apex=spring+half;
       const lo=z-half,hi=z+half;
       mesh('Seitenwand',x,2.25,(cursor+lo)/2,.48,4.5,lo-cursor,mats.facadeWall,true);
       mesh('Rundbogenfenster-Brüstung',x,sill/2,z,.48,sill,2*half,mats.facadeWall,true);
@@ -176,12 +183,16 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
       for(const d of [-1,1]){
        mesh('Rundbogenpfosten',x,(sill+spring)/2,z+d*(half-.035),.17,spring-sill,.07,mats.paintedSash);
       }
-      for(const y of [sill,1.35,spring])mesh('Rundbogen-Quersprosse',x,y,z,.12,.055,2*half,mats.paintedSash);
+      for(const y of [sill,.81,1.42,2.02,spring])mesh('Rundbogen-Quersprosse',x,y,z,.12,.055,2*half,mats.paintedSash);
       mesh('Rundbogen-Mittelsprosse',x,(sill+apex)/2,z,.12,apex-sill,.055,mats.paintedSash);
       const rim=new THREE.Shape();
       rim.moveTo(half-.055,spring);rim.absarc(0,spring,half-.055,0,Math.PI,false);
       rim.lineTo(-half-.10,spring);rim.absarc(0,spring,half+.10,Math.PI,0,true);rim.closePath();
-      shaped('Profilierter Steinbogen',rim,.56,x+.28,mats.trim);
+      const sash=new THREE.Shape();
+      sash.moveTo(half-.13,spring);sash.absarc(0,spring,half-.13,0,Math.PI,false);
+      sash.lineTo(-half-.012,spring);sash.absarc(0,spring,half+.012,Math.PI,0,true);sash.closePath();
+      shaped('Anthrazitfarbener Bogenrahmen',sash,.14,x+.07,mats.paintedSash);
+      shaped('Profilierter Steinbogen' ,rim,.56,x+.28,mats.trim);
       mesh('Rundbogenfensterbank',x,sill-.03,z,.64,.13,2*half+.25,mats.windowStone);
       cursor=hi;
       continue;
@@ -205,8 +216,9 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   }
   for(const z of [front,rear]){
    const outward=z===front?1:-1;
-   const plinthWidth=width/2-1.10;
+   const plinthWidth=width/2-(z===front?1.10:terraceHalf);
    for(const side of [-1,1])mesh('Fassadensockel',cx+side*(width/2-plinthWidth/2),.29,z+outward*.10,plinthWidth,.58,.48,mats.shade);
+   if(z===rear)continue;
    for(const sign of [-1,1]){
     const x=cx+sign*1.24;
     mesh('Portalpilaster',x,1.55,z+outward*.377,.25,3.1,.22,mats.dressedStone);
@@ -258,11 +270,11 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    mesh('Mehrstufiges Dachgesims',cx,y,houseMiddle,width+w-15,h,width+d-15,mats.trim);
   }
   mesh('Traufblech',cx,13.752,houseMiddle,width+.5,.045,width+.64,mats.roof);
-  const eave=13.77,ridge=15.02;
+  const eave=13.77,ridge=19.9;
   const eaveX=width/2+.25;
   const points=[
    [-eaveX,eave,rear-.32],[eaveX,eave,rear-.32],[eaveX,eave,front+.32],[-eaveX,eave,front+.32],
-   [-1,ridge,houseMiddle],[1,ridge,houseMiddle]
+   [-4.5,ridge,houseMiddle],[4.5,ridge,houseMiddle]
   ];
   const roofGeometry=new THREE.BufferGeometry();
   const faces=[0,4,5,0,5,1,1,5,2,2,5,4,2,4,3,3,4,0];
@@ -271,13 +283,72 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
   roofGeometry.computeVertexNormals();
   const roof=new THREE.Mesh(roofGeometry,mats.roof);
   roof.position.x=cx;
-  roof.name='Niedriges Zinkwalmdach';
+  roof.name='Steiles anthrazitfarbenes Walmdach';
   roof.castShadow=roof.receiveShadow=true;
   scene.add(roof);
   for(const offset of [-4.1,4.1]){
-   mesh('Schornstein',cx+offset,14.39,houseMiddle-.9,1.07,1.2,.93,mats.facadeWall);
-   mesh('Schornsteinkrone',cx+offset,15.03,houseMiddle-.9,1.29,.18,1.17,mats.trim);
+   mesh('Schornstein',cx+offset,19.53,houseMiddle-.8,1.07,2.0,.93,mats.facadeWall);
+   mesh('Schornsteinkrone',cx+offset,20.59,houseMiddle-.8,1.29,.18,1.17,mats.trim);
   }
+  for(const side of [-1,1])for(const offset of [-3.45,3.45]){
+   const z=houseMiddle+side*8.65,x=cx+offset,face=z+side*.55;
+   mesh('Gaubenkörper',x,16.02,z-side*.65,1.92,1.76,2.42,mats.dressedStone);
+   mesh('Gaubenfenster',x,16.17,face,1.26,1.12,.075,glass).castShadow=false;
+   for(const dx of [-.66,0,.66])mesh('Gaubenpfosten',x+dx,16.17,face+side*.035,.068,1.21,.082,mats.paintedSash);
+   for(const y of [15.57,16.17,16.77])mesh('Gaubenquerriegel',x,y,face+side*.036,1.39,.068,.085,mats.paintedSash);
+   mesh('Gaubensohlbank',x,15.51,face,1.58,.12,.30,mats.trim);
+   const hood=mesh('Anthrazithaube der Gaube',x,17.09,z-side*.59,2.17,.16,2.74,mats.roof);
+   hood.rotation.x=side*.18;
+  }
+  const doorZ=rear-terraceDepth;
+  const halfDoor=1.075,segments=14;
+  function extensionDepth(offset){
+   if(Math.abs(offset)<=halfDoor)return terraceDepth;
+   const fraction=(Math.abs(offset)-halfDoor)/(terraceHalf-halfDoor);
+   return terraceDepth*Math.cos(fraction*Math.PI/2);
+  }
+  for(const side of [-1,1]){
+   for(let i=0;i<segments;i++){
+    const a=side*(halfDoor+(terraceHalf-halfDoor)*i/segments);
+    const b=side*(halfDoor+(terraceHalf-halfDoor)*(i+1)/segments);
+    const za=rear-extensionDepth(a),zb=rear-extensionDepth(b);
+    const w=Math.hypot(b-a,zb-za),xx=cx+(a+b)/2,zz=(za+zb)/2;
+    const angle=Math.atan2(za-zb,b-a)+(side<0?Math.PI:0);
+    for(const [name,y,h,d,material] of [
+     ['Gerundete Terrassenwand',.48,.96,.24,mats.facadeWall],
+     ['Gerundetes Terrassen-Oberlicht',2.18,2.44,.16,glass],
+     ['Gerundeter Kalksteinfries',3.66,.52,.26,mats.trim],
+     ['Dachrand des Vorbaus',3.96,.15,.38,mats.roof]
+    ]){
+     const piece=mesh(name,xx,y,zz,w+.014,h,d,material);
+     piece.rotation.y=angle;
+     if(material===glass)piece.castShadow=false;
+    }
+    mesh('Anthrazitfarbener Terrassenpfosten',cx+a,2.18,za,.072,2.46,.12,mats.paintedSash);
+    const collision=mesh('Kollision der Terrassenrundung',xx,1.3,zz,Math.abs(b-a)+.045,2.6,Math.abs(zb-za)+.075,mats.facadeWall,true);
+    collision.visible=false;
+   }
+  }
+  const plan=new THREE.Shape();
+  plan.moveTo(-terraceHalf,-rear-.32);
+  for(let i=0;i<=64;i++){
+   const u=-terraceHalf+2*terraceHalf*i/64;
+   plan.lineTo(u,-rear+extensionDepth(u));
+  }
+  plan.lineTo(terraceHalf,-rear-.32);plan.closePath();
+  for(const [name,y,h,material] of [['Boden des Terrassenzimmers',.05,.11,mats.stairStone],['Dach des Terrassenzimmers',4.03,.14,mats.roof]]){
+   const slab=new THREE.Mesh(new THREE.ExtrudeGeometry(plan,{depth:h,bevelEnabled:false}),material);
+   slab.name=name;slab.rotation.x=-Math.PI/2;slab.position.set(cx,y-h,0);
+   slab.castShadow=slab.receiveShadow=true;scene.add(slab);
+  }
+  for(let i=0;i<40;i++){
+   const a=-terraceHalf+2*terraceHalf*i/40,b=-terraceHalf+2*terraceHalf*(i+1)/40;
+   floor(cx+a,cx+b,rear-Math.min(extensionDepth(a),extensionDepth(b)),rear+.33,.05);
+  }
+  mesh('Dachrand über der Terrassentür',cx,3.96,doorZ,2*halfDoor+.08,.15,.38,mats.roof);
+  mesh('Terrassen-Türsturz',cx,3.525,doorZ,2*halfDoor,1.01,.24,mats.facadeWall,true);
+  mesh('Terrassenschwelle',cx,.025,doorZ,2*halfDoor,.05,.53,mats.stairStone);
+  doors.push(addPortalDoors(THREE,scene,mats,glass,cx,doorZ,-1,2*halfDoor,3.02,null));
   for(const [level,height] of [[.05,.05],[balconyLevel,.20],[upperFloor,.20]]){
    const half=width/2-.38;
    const bounds=[cx-half,cx+half,rear+.28,front-.26];
