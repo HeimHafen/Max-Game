@@ -148,7 +148,9 @@ export function buildEnsemble(THREE, scene, source, mats, glass, gableMaterial=m
    for(let i=0;i<3;i++){
     const y=i*4.5,top=y+4.5,sill=y+1.01,lintel=y+3.47;
     let cursor=rear;
-    for(const z of [3.65,8.5,13.35]){
+    // Die Stirnwände der Eingangshalle bleiben im Erdgeschoss geschlossen.
+    const windowCenters=i===0?[3.65,13.35]:[3.65,8.5,13.35];
+    for(const z of windowCenters){
      const w=1.68,lo=z-w/2,hi=z+w/2;
      mesh('Seitenwand',x,(y+top)/2,(cursor+lo)/2,.48,top-y,lo-cursor,mats.facadeWall,true);
      mesh('Seitliche Fensterbrüstung',x,(y+sill)/2,z,.48,sill-y,w,mats.facadeWall,true);
