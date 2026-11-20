@@ -1,11 +1,11 @@
-BURG RABENFELS V8
+RABENFELS MIT HERRENHAUSGRAFIK
 
-Für GitHub Pages index.html und burg-v8.js in denselben Ordner hochladen.
-Links ziehen zum Laufen, rechts wischen zum Umsehen. Unter „Orte“ stehen
-die Ziele zur Direktauswahl.
+Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
+auf GitHub Pages kopieren. index.html, src/, assets/ und vendor/ gehören
+zusammen. Die Seite läuft über HTTP oder HTTPS.
 
-Gewölbekeller: Am Ende der Kellertreppe ist ein ebenes Podest. Dort
-links durch die Türöffnung in den Gewölbekeller abbiegen.
+Der Portikus ist der originale Nordportikus aus Herrenhaus V97. Die beiden
+separaten Häuser sind im Erdgeschoss von vorne und hinten begehbar.
+Die Fenster der oberen Stockwerke gehören zur Fassade.
 
-Westturm: Der Treppenfuß ist von der Stirnseite aus erreichbar. Oben
-führt das Podest seitlich zur Aussichtsplattform.
+Links ziehen zum Laufen, rechts wischen zum Umsehen.

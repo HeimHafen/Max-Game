@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Burg Rabenfels</title>
+<title>Rabenfels · Herrenhaus</title>
 <style>
 * { box-sizing: border-box }
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none }
@@ -31,11 +31,12 @@ p { max-width: 36ch; line-height: 1.48; margin: 0 0 14px }
  .intro { align-items: center; padding-inline: 6vw; background: linear-gradient(90deg, #17130ff2, #17130fc4 29%, transparent 73%) }
 }
 @media (max-height: 420px) { h1 { font-size: 32px; margin-bottom: 8px } p { margin-bottom: 8px } }
+canvas { display: block }
 </style>
 </head>
 <body>
-<canvas aria-label="Dreidimensionaler Burgrundgang"></canvas>
-<header hidden><strong>Burg Rabenfels</strong><small id="place">Burgbrücke</small></header>
+<canvas aria-label="Dreidimensionaler Rundgang"></canvas>
+<header hidden><strong>Rabenfels · Herrenhaus</strong><small id="place">Vorplatz</small></header>
 <aside hidden>
 <button id="map" aria-expanded="false" aria-controls="places">Orte</button>
 <button id="help" aria-label="Steuerung anzeigen">?</button>
@@ -43,13 +44,13 @@ p { max-width: 36ch; line-height: 1.48; margin: 0 0 14px }
 </aside>
 <section class="intro">
 <article>
-<h1>Burg Rabenfels</h1>
-<p id="description">Vom Westhof führen fünf Portale in neue Räume. Du erreichst ihn über die Vorratskammer oder die Nordhalle.</p>
+<h1>Rabenfels · Herrenhaus</h1>
+<p id="description">Zwischen zwei Kalksteinhäusern führt der Weg durch den Portikus in den Garten.</p>
 <p class="gestures"><strong>Links ziehen</strong> zum Laufen.<br><strong>Rechts wischen</strong> zum Umsehen.</p>
-<button id="start">Burg betreten</button>
+<button id="start" disabled>Rundgang starten</button>
 <p id="error" role="alert"></p>
 </article>
 </section>
-<script src="burg-v8.js"></script>
+<script type="module" src="src/rabenfels-herrenhaus.js"></script>
 </body>
 </html>
