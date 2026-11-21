@@ -1,7 +1,7 @@
 MAX-TOWN — RABENFELS MIT HERRENHAUSGRAFIK
 
 Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
-auf GitHub Pages kopieren. index.html, windfang-feinschliff/, assets/ und vendor/ gehören
+auf GitHub Pages kopieren. index.html, galerie-rechts/, assets/ und vendor/ gehören
 zusammen. Die Seite läuft über HTTP oder HTTPS.
 
 Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Unter dem Portikus rahmen drei große Steinkassetten die mittige Laternenrosette.
@@ -25,7 +25,7 @@ Die Eingangshalle verbindet vier Seitenräume und den mittleren Gartengang.
 Beide Häuser haben ein steiles Walmdach mit Gauben und anthrazitfarbene Rundbogenfenster in der Halle.
 Der rechteckige Vorbau sitzt mittig im Terrassenzimmer und ragt 2,85 Einheiten in den Garten.
 
-Neuer Einstieg: Die Startseite und das Hilfemenü zeigen „Version Windfang · Feinschliff“.
+Neuer Einstieg: Die Startseite und das Hilfemenü zeigen „Version Rechtes Haus · Treppenhalle“.
 Die Gartenseite beider Häuser ist direkt über Orte → Orangerie links/rechts erreichbar.
 
 Über Orte → Dachgeschoss links/rechts erreichst du die begehbaren Dachräume.
@@ -33,3 +33,7 @@ Die Gauben sind von innen verglast und bieten freie Sicht nach draußen.
 
 Unter Orte → Windfang links oder Windfang rechts stehst du direkt
 vor der dunklen Windfangtür. Die weiße Tür gehört zum Terrassenzimmer.
+
+Orte → Treppenhalle rechts führt zum neuen Hallenzugang.
+Die Treppe rechts hinter dem Windfang verbindet das Erdgeschoss mit der Galerie
+im ersten Obergeschoss. Zum Dachgeschoss führt weiterhin das Menü Orte.
