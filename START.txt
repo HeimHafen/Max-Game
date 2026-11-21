@@ -1,7 +1,7 @@
 MAX-TOWN — RABENFELS MIT HERRENHAUSGRAFIK
 
 Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
-auf GitHub Pages kopieren. index.html, laternenabgleich/, assets/ und vendor/ gehören
+auf GitHub Pages kopieren. index.html, geisterhaus/, assets/ und vendor/ gehören
 zusammen. Die Seite läuft über HTTP oder HTTPS.
 
 Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Unter dem Portikus rahmen drei große Steinkassetten die mittige Laternenrosette.
