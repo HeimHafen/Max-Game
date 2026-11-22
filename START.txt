@@ -1,7 +1,7 @@
 MAX-TOWN — RABENFELS MIT HERRENHAUSGRAFIK
 
 Den Inhalt dieses Ordners in das Stammverzeichnis der Rabenfels-Seite
-auf GitHub Pages kopieren. index.html, geisterhaus/, assets/ und vendor/ gehören
+auf GitHub Pages kopieren. index.html, wohnzimmer/, assets/ und vendor/ gehören
 zusammen. Die Seite läuft über HTTP oder HTTPS.
 
 Der Portikus basiert auf dem Nordportikus aus Herrenhaus V97. Unter dem Portikus rahmen drei große Steinkassetten die mittige Laternenrosette.
@@ -44,3 +44,6 @@ der Deckenöffnung. Geradeaus führt das Foyer zum Terrassenzimmer.
 
 Orte → Foyer rechts zeigt den Treppenantritt vom Eingang aus.
 Der geschwungene Lauf mündet rechts in die Galerie.
+
+Das Wohnzimmer liegt hinten rechts im rechten Haus.
+Direkt öffnen über Orte → Wohnzimmer rechts oder vom Foyer durch die hintere rechte Tür.
